@@ -1,0 +1,22 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Visitor extends Model
+{
+    use HasFactory;
+
+    protected $fillable = ['ip','name','email','phone','status'];
+
+    protected $appends = [
+        'avatar'
+    ];
+
+    public function getAvatarAttribute() {
+        // your logic of how to get discount value
+        return $this->attributes['avatar'] = 'https://eu.ui-avatars.com/api/?name='.$this->name.'&size=250';
+    }
+}
