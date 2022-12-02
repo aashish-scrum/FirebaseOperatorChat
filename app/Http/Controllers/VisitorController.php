@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Message;
 use App\Models\User;
 use App\Models\Visitor;
 use Illuminate\Http\Request;
@@ -30,18 +31,24 @@ class VisitorController extends Controller
         $operator = User::where('status',1)->orderBy('assigned_visitors')->first();
         
         $newArray['visitor'] = $visitor->visitor_id;
+        $newArray['visitor_name'] = $visitor->name;
 
         if ($operator != '') {
             $newArray['operator'] = $operator->operator_id;
+            $newArray['operator_name'] = $operator->name;
             $operator->assigned_visitors ++;
             $operator->save();
+            $message = new Message();
+            $message->operator_id = $operator->id;
+            $message->visitor_id = $visitor->id;
+            $message->save();
         }
         return response()->json($newArray,200);
     }
 
     public function visitors()
     {
-        return Visitor::orderBy('status','DESC')->get();
+        return Visitor::whereHas('messages',function($query){$query->where('operator_id',auth()->id());})->orderBy('status','DESC')->get();
     }
 
     public function visitor_logout($operator,$visitor)

@@ -62,19 +62,22 @@
                 <div class="modal-content">
                     <div class="msg-head">
                         <div class="row">
-                            <div class="col-8">
+                            <div class="col-md-8">
                                 <div class="d-flex align-items-center">
                                     <div class="flex-grow-1 ms-3">
-                                        <h3>{{ state.visitorname }}</h3>
-                                        <p>{{ state.visitoremail }}</p>
+                                        <h3>{{ state.visitor_name }}</h3>
+                                        <p>{{ state.visitor_email }}</p>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <select class="form-control ms-auto" @change="changeStatus">
-                                    <option value="1" :selected="(operatorStatus == 1) ? true : false">Online</option>
-                                    <option value="0" :selected="(operatorStatus == 0) ? true : false">Offline</option>
-                                </select>
+                                <div class="d-flex justify-content-end">
+                                    <button type="button" @click="endChat()" class="btn btn-sm btn-danger" v-if="state.visitor != ''">End Chat</button>
+                                    <select class="form-control-sm ms-1" @change="changeStatus">
+                                        <option value="1" :selected="(operatorStatus == 1) ? true : false">Online</option>
+                                        <option value="0" :selected="(operatorStatus == 0) ? true : false">Offline</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -83,12 +86,12 @@
                             <ul class="">
                                 <template v-for="message in state.messages" :key="message.key">
                                     <li class="sender" v-if="message.sender == state.visitor">
-                                        <p><span class=""> </span> {{ message.content }} </p>
-                                        <!-- <span class="time">{{ message.created_at }}</span> -->
+                                        <p><span class="">{{ message.visitor_name }} : </span> {{ message.content }} </p>
+                                        <span class="time">{{ new Date(message.timestamp).toLocaleString(undefined,{hour12: true,hour: 'numeric',minute: '2-digit',second: '2-digit',}) }} {{ (message.read == 1) ? 'read' : 'unread' }}</span>
                                     </li>
                                     <li class="repaly" v-else-if="message.sender == state.operator">
                                         <p><span class=""> You : </span> {{ message.content }} </p>
-                                        <!-- <span class="time">{{ message.created_at }}</span> -->
+                                        <span class="time">{{ new Date(message.timestamp).toLocaleString(undefined,{hour12: true,hour: 'numeric',minute: '2-digit',second: '2-digit',}) }} {{ (message.read == 1) ? 'read' : 'unread' }}</span>
                                     </li>
                                 </template>
                             </ul>
@@ -129,8 +132,9 @@ export default {
 		let state = reactive({
 			operator: props.user.operator_id,
             visitor : '',
-            visitorname : '',
-            visitoremail : '',
+            operator_name : props.user.name,
+            visitor_name : '',
+            visitor_email : '',
 			messages: []
 		});
 
@@ -154,11 +158,13 @@ export default {
 			}
 
 			const message = {
-				operator: state.operator,
-				visitor: state.visitor,
-                sender : state.operator,
+                operator_name: state.operator_name,
+				visitor_name: state.visitor_name,
+				sender : state.operator,
                 receiver : state.visitor,
-				content: inputMessage.value
+				content: inputMessage.value,
+				read : 0,
+				timestamp : Date.now()
 			}
 
 			messagesRef.push(message);
@@ -167,6 +173,13 @@ export default {
 
 		const scrollBottom = () => {
 			if (state.messages.length > 1 && state.operator != '') {
+                state.messages.forEach(row => {
+                    if(row.read == 0 && row.sender == state.visitor){
+                        db.database().ref("messages/"+row.id).update({
+                            read : 1,
+                        });
+                    }
+                });
 				let el = hasScrolledToBottom.value;
 				el.scrollTop = el.scrollHeight;
 			}
@@ -174,8 +187,8 @@ export default {
 
         const fetchMessages = (visitor,name,email) => {
             state.visitor = visitor;
-            state.visitorname = name;
-            state.visitoremail = email;
+            state.visitor_name = name;
+            state.visitor_email = email;
             const messagesRef = db.database().ref("messages");
 			messagesRef.on('value', snapshot => {
 				const data = snapshot.val();
@@ -184,11 +197,13 @@ export default {
                     if((data[key].sender == state.visitor && data[key].receiver == state.operator) || (data[key].sender == state.operator && data[key].receiver == state.visitor)){
                         messages.push({
                             id: key,
-                            operator: data[key].operator,
-                            visitor: data[key].visitor,
-                            sender : data[key].sender,
-                            receiver : data[key].receiver,
-                            content: data[key].content
+							operator_name: data[key].operator_name,
+							visitor_name: data[key].visitor_name,
+							sender : data[key].sender,
+							receiver : data[key].receiver,
+							content: data[key].content,
+							read : data[key].read,
+							timestamp : data[key].timestamp
                         });
                     }
 				});
@@ -210,6 +225,21 @@ export default {
             });
         }
 
+        const endChat = () => {
+            let end = {
+                operator_id : state.operator,
+                visitor_id : state.visitor,
+                messages : state.messages,
+            }
+            axios.post('/visitor/chat-end', end).then(response => {
+                if(response.data.status == 'success'){
+                    state.messages.forEach(row => {
+                        db.database().ref("messages/"+row.id).remove();
+                    });
+                }
+            });
+        }
+
 		onMounted(() => {
             fetchUsers();
 		});
@@ -226,6 +256,7 @@ export default {
 			SendMessage,
             fetchMessages,
             changeStatus,
+            endChat,
 			Logout,
 			scrollBottom,
 			hasScrolledToBottom

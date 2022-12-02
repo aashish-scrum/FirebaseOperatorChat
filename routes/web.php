@@ -24,3 +24,4 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::get('/chats', [App\Http\Controllers\HomeController::class, 'chat'])->name('chat');
 Route::get('/chat/visitors', [App\Http\Controllers\VisitorController::class, 'visitors'])->name('visitors');
 Route::get('/chat/operator/status/{operator_id}/{status}', [App\Http\Controllers\HomeController::class, 'operator_status'])->name('visitors');
+Route::post('/visitor/chat-end',[App\Http\Controllers\HomeController::class, 'chat_end']);

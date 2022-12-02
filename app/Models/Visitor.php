@@ -19,4 +19,9 @@ class Visitor extends Model
         // your logic of how to get discount value
         return $this->attributes['avatar'] = 'https://eu.ui-avatars.com/api/?name='.$this->name.'&size=250';
     }
+
+    public function messages()
+    {
+        return $this->hasMany(Message::class,'visitor_id');
+    }
 }
