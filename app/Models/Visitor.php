@@ -9,7 +9,7 @@ class Visitor extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['ip','name','email','phone','status'];
+    protected $fillable = ['visitor_id','ip','name','email','phone','status'];
 
     protected $appends = [
         'avatar'

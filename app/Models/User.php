@@ -45,12 +45,4 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    protected $appends = [
-        'avatar'
-    ];
-
-    public function getAvatarAttribute() {
-        // your logic of how to get discount value
-        return $this->attributes['avatar'] = 'https://eu.ui-avatars.com/api/?name='.$this->name.'&size=250';
-    }
 }

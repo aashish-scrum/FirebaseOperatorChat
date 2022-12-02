@@ -33,9 +33,9 @@
                     <div class="modal-body mt-1 border-top">
                         <div class="chat-lists">
                             <div class="chat-list">
-                                <!-- <template v-for="visitor in users">
-                                    <a href="javascript:void(0)" class="d-flex align-items-center px-3 py-2" v-bind:class="(visitor.id == chatUser.id) ? 'selected-user' : '' "
-                                        @click="fetchMessages(visitor)">
+                                <template v-for="visitor in visitors">
+                                    <a href="javascript:void(0)" class="d-flex align-items-center px-3 py-2" v-bind:class="(visitor.visitor_id == state.visitor) ? 'selected-user' : '' "
+                                        @click="fetchMessages(visitor.visitor_id,visitor.name,visitor.email)">
                                         <div class="flex-shrink-0">
                                             <img class="img-fluid"
                                                 v-bind:src="visitor.avatar"
@@ -46,9 +46,9 @@
                                             <h3>{{ visitor.name }}</h3>
                                             <p>{{ visitor.email }}</p>
                                         </div>
-                                        <span class="badge text-bg-danger unread-badge" v-if="contact.unread_messages_count > 0">{{contact.unread_messages_count}}</span>
+                                        <!-- <span class="badge text-bg-danger unread-badge" v-if="contact.unread_messages_count > 0">{{contact.unread_messages_count}}</span> -->
                                     </a>
-                                </template> -->
+                                </template>
                             </div>
                         </div>
                     </div>
@@ -59,52 +59,43 @@
         <!-- chatbox -->
         <div class="chatbox">
             <div class="modal-dialog-scrollable">
-                <div class="modal-content" id="chatBox">
+                <div class="modal-content">
                     <div class="msg-head">
                         <div class="row">
                             <div class="col-8">
-                                    <div class="d-flex align-items-center">
-                                        <!-- <span class="chat-icon"><img class="img-fluid avatar"
-                                                v-bind:src="chatUser.avatar"
-                                                alt="image title"></span>
-                                        <div class="flex-shrink-0">
-                                            <img class="img-fluid avatar" v-bind:src="chatUser.avatar" alt="user img">
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h3>{{ chatUser.name }}</h3>
-                                            <p>{{ chatUser.email }}</p>
-                                        </div> -->
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-grow-1 ms-3">
+                                        <h3>{{ state.visitorname }}</h3>
+                                        <p>{{ state.visitoremail }}</p>
                                     </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <select class="form-control ms-auto" @change="changeStatus">
+                                    <option value="1" :selected="(operatorStatus == 1) ? true : false">Online</option>
+                                    <option value="0" :selected="(operatorStatus == 0) ? true : false">Offline</option>
+                                </select>
                             </div>
                         </div>
                     </div>
                     <div class="scrollable modal-body" ref="hasScrolledToBottom">
-                        <div class="msg-body" v-if="state.username === '' || state.username === null">
-                            <form class="login-form" @submit.prevent="Login">
-                                <div class="form-inner">
-                                    <h1>Login to FireChat</h1>
-                                    <label for="username">Username</label>
-                                    <input type="text" v-model="inputUsername" placeholder="Please enter your username..." />
-                                    <input type="submit" value="Login" />
-                                </div>
-                            </form>
-                        </div>
-                        <div class="msg-body" v-else>
+                        <div class="msg-body">
                             <ul class="">
                                 <template v-for="message in state.messages" :key="message.key">
-                                    <li :class="(message.username == state.username) ? 'repaly' : 'sender'" >
-                                        <p><span class=""> {{ (message.username == state.username) ? 'You' : message.username }} : </span> {{ message.content }} </p>
+                                    <li class="sender" v-if="message.sender == state.visitor">
+                                        <p><span class=""> </span> {{ message.content }} </p>
+                                        <!-- <span class="time">{{ message.created_at }}</span> -->
+                                    </li>
+                                    <li class="repaly" v-else-if="message.sender == state.operator">
+                                        <p><span class=""> You : </span> {{ message.content }} </p>
                                         <!-- <span class="time">{{ message.created_at }}</span> -->
                                     </li>
                                 </template>
                             </ul>
                         </div>
-                        <!-- <div class="w-100 h-100 d-flex justify-content-center align-items-center" v-else>
-                            <h5>Say Hi to <span style="font-weight: 600;">{{ chatUser.name }}</span> 👋</h5>
-                        </div> -->
                     </div>
 
-                    <div class="send-box position-relative">
+                    <div class="send-box position-relative d-none" id="chatBox">
                         <form action="javascript:void(0)" @submit.prevent="SendMessage">
                             <!-- <EmojiPicker :display-recent="true" :disableSkinTones="false" @select="onSelectEmoji" class="d-none" />
                             <a tabindex="0" class="p-2" role="button" @click="showEmoji" >😀</a> -->
@@ -132,21 +123,27 @@ export default {
     setup(props) {
         const inputUsername = ref("");
 		const inputMessage = ref("");
-		let hasScrolledToBottom = ref('')
-		const state = reactive({
-			username: props.user.operator_id,
+		let hasScrolledToBottom = ref("")
+		let operatorStatus = ref(props.user.status);
+		let visitors = ref([]);
+		let state = reactive({
+			operator: props.user.operator_id,
+            visitor : '',
+            visitorname : '',
+            visitoremail : '',
 			messages: []
 		});
 
 		const Login = () => {
 			if (inputUsername.value != "" || inputUsername.value != null) {
-				state.username = inputUsername.value;
+				state.operator = inputUsername.value;
 				inputUsername.value = "";
 			}
 		}
 
 		const Logout = () => {
-			state.username = "";
+			state.operator = "";
+			state.visitor = "";
 		}
 
 		const SendMessage = () => {
@@ -157,7 +154,10 @@ export default {
 			}
 
 			const message = {
-				username: state.username,
+				operator: state.operator,
+				visitor: state.visitor,
+                sender : state.operator,
+                receiver : state.visitor,
 				content: inputMessage.value
 			}
 
@@ -166,39 +166,66 @@ export default {
 		}
 
 		const scrollBottom = () => {
-			if (state.messages.length > 1 && state.username != '') {
+			if (state.messages.length > 1 && state.operator != '') {
 				let el = hasScrolledToBottom.value;
 				el.scrollTop = el.scrollHeight;
 			}
 		}
 
-		onMounted(() => {
-			const messagesRef = db.database().ref("messages");
-
+        const fetchMessages = (visitor,name,email) => {
+            state.visitor = visitor;
+            state.visitorname = name;
+            state.visitoremail = email;
+            const messagesRef = db.database().ref("messages");
 			messagesRef.on('value', snapshot => {
 				const data = snapshot.val();
 				let messages = [];
-
 				Object.keys(data).forEach(key => {
-					messages.push({
-						id: key,
-						username: data[key].username,
-						content: data[key].content
-					});
+                    if((data[key].sender == state.visitor && data[key].receiver == state.operator) || (data[key].sender == state.operator && data[key].receiver == state.visitor)){
+                        messages.push({
+                            id: key,
+                            operator: data[key].operator,
+                            visitor: data[key].visitor,
+                            sender : data[key].sender,
+                            receiver : data[key].receiver,
+                            content: data[key].content
+                        });
+                    }
 				});
-
 				state.messages = messages;
+                document.querySelector('#chatBox').classList.remove('d-none');
 			});
+        }
+
+        const fetchUsers = async () => {
+            axios.get('/chat/visitors').then(response => {
+                visitors.value = response.data;
+            });
+        }
+        const changeStatus = (event) => {
+            axios.get('/chat/operator/status/'+state.operator+'/'+event.target.value).then(response => {
+                if(response.data.status == 'success'){
+                    operatorStatus.value = event.target.value;
+                }
+            });
+        }
+
+		onMounted(() => {
+            fetchUsers();
 		});
 		onUpdated(() => {
 			scrollBottom();
 		})
 		return {
 			inputUsername,
+            visitors,
 			Login,
 			state,
+            operatorStatus,
 			inputMessage,
 			SendMessage,
+            fetchMessages,
+            changeStatus,
 			Logout,
 			scrollBottom,
 			hasScrolledToBottom

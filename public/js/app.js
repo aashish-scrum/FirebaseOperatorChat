@@ -41676,6 +41676,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _db__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../db */ "./resources/js/db.js");
 /* harmony import */ var bootstrap_dist_js_bootstrap_min_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! bootstrap/dist/js/bootstrap.min.js */ "./node_modules/bootstrap/dist/js/bootstrap.min.js");
 /* harmony import */ var bootstrap_dist_js_bootstrap_min_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(bootstrap_dist_js_bootstrap_min_js__WEBPACK_IMPORTED_MODULE_2__);
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, defineProperty = Object.defineProperty || function (obj, key, desc) { obj[key] = desc.value; }, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return defineProperty(generator, "_invoke", { value: makeInvokeMethod(innerFn, self, context) }), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; defineProperty(this, "_invoke", { value: function value(method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; } function maybeInvokeDelegate(delegate, context) { var methodName = context.method, method = delegate.iterator[methodName]; if (undefined === method) return context.delegate = null, "throw" === methodName && delegate.iterator["return"] && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method) || "return" !== methodName && (context.method = "throw", context.arg = new TypeError("The iterator does not provide a '" + methodName + "' method")), ContinueSentinel; var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) { if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; } return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, defineProperty(Gp, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), defineProperty(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (val) { var object = Object(val), keys = []; for (var key in object) { keys.push(key); } return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) { "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); } }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, "catch": function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
 
 
@@ -41684,19 +41688,25 @@ __webpack_require__.r(__webpack_exports__);
   setup: function setup(props) {
     var inputUsername = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)("");
     var inputMessage = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)("");
-    var hasScrolledToBottom = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)('');
+    var hasScrolledToBottom = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)("");
+    var operatorStatus = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(props.user.status);
+    var visitors = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)([]);
     var state = (0,vue__WEBPACK_IMPORTED_MODULE_0__.reactive)({
-      username: props.user.operator_id,
+      operator: props.user.operator_id,
+      visitor: '',
+      visitorname: '',
+      visitoremail: '',
       messages: []
     });
     var Login = function Login() {
       if (inputUsername.value != "" || inputUsername.value != null) {
-        state.username = inputUsername.value;
+        state.operator = inputUsername.value;
         inputUsername.value = "";
       }
     };
     var Logout = function Logout() {
-      state.username = "";
+      state.operator = "";
+      state.visitor = "";
     };
     var SendMessage = function SendMessage() {
       var messagesRef = _db__WEBPACK_IMPORTED_MODULE_1__["default"].database().ref("messages");
@@ -41704,42 +41714,88 @@ __webpack_require__.r(__webpack_exports__);
         return;
       }
       var message = {
-        username: state.username,
+        operator: state.operator,
+        visitor: state.visitor,
+        sender: state.operator,
+        receiver: state.visitor,
         content: inputMessage.value
       };
       messagesRef.push(message);
       inputMessage.value = "";
     };
     var scrollBottom = function scrollBottom() {
-      if (state.messages.length > 1 && state.username != '') {
+      if (state.messages.length > 1 && state.operator != '') {
         var el = hasScrolledToBottom.value;
         el.scrollTop = el.scrollHeight;
       }
     };
-    (0,vue__WEBPACK_IMPORTED_MODULE_0__.onMounted)(function () {
+    var fetchMessages = function fetchMessages(visitor, name, email) {
+      state.visitor = visitor;
+      state.visitorname = name;
+      state.visitoremail = email;
       var messagesRef = _db__WEBPACK_IMPORTED_MODULE_1__["default"].database().ref("messages");
       messagesRef.on('value', function (snapshot) {
         var data = snapshot.val();
         var messages = [];
         Object.keys(data).forEach(function (key) {
-          messages.push({
-            id: key,
-            username: data[key].username,
-            content: data[key].content
-          });
+          if (data[key].sender == state.visitor && data[key].receiver == state.operator || data[key].sender == state.operator && data[key].receiver == state.visitor) {
+            messages.push({
+              id: key,
+              operator: data[key].operator,
+              visitor: data[key].visitor,
+              sender: data[key].sender,
+              receiver: data[key].receiver,
+              content: data[key].content
+            });
+          }
         });
         state.messages = messages;
+        document.querySelector('#chatBox').classList.remove('d-none');
       });
+    };
+    var fetchUsers = /*#__PURE__*/function () {
+      var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
+        return _regeneratorRuntime().wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                axios.get('/chat/visitors').then(function (response) {
+                  visitors.value = response.data;
+                });
+              case 1:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee);
+      }));
+      return function fetchUsers() {
+        return _ref.apply(this, arguments);
+      };
+    }();
+    var changeStatus = function changeStatus(event) {
+      axios.get('/chat/operator/status/' + state.operator + '/' + event.target.value).then(function (response) {
+        if (response.data.status == 'success') {
+          operatorStatus.value = event.target.value;
+        }
+      });
+    };
+    (0,vue__WEBPACK_IMPORTED_MODULE_0__.onMounted)(function () {
+      fetchUsers();
     });
     (0,vue__WEBPACK_IMPORTED_MODULE_0__.onUpdated)(function () {
       scrollBottom();
     });
     return {
       inputUsername: inputUsername,
+      visitors: visitors,
       Login: Login,
       state: state,
+      operatorStatus: operatorStatus,
       inputMessage: inputMessage,
       SendMessage: SendMessage,
+      fetchMessages: fetchMessages,
+      changeStatus: changeStatus,
       Logout: Logout,
       scrollBottom: scrollBottom,
       hasScrolledToBottom: hasScrolledToBottom
@@ -41765,59 +41821,94 @@ __webpack_require__.r(__webpack_exports__);
 var _hoisted_1 = {
   "class": "chat-area"
 };
-var _hoisted_2 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createStaticVNode)("<div class=\"chatlist p-0\"><div class=\"modal-dialog-scrollable\"><div class=\"modal-content\"><div class=\"chat-header p-3\"><div class=\"msg-search\"><input type=\"text\" class=\"form-control\" id=\"inlineFormInputGroup\" placeholder=\"Search\" aria-label=\"search\"><a class=\"add\" href=\"#\"><img class=\"img-fluid\" src=\"https://mehedihtml.com/chatbox/assets/img/add.svg\" alt=\"add\"></a></div></div><div class=\"modal-body mt-1 border-top\"><div class=\"chat-lists\"><div class=\"chat-list\"><!-- &lt;template v-for=&quot;visitor in users&quot;&gt;\r\n                                    &lt;a href=&quot;javascript:void(0)&quot; class=&quot;d-flex align-items-center px-3 py-2&quot; v-bind:class=&quot;(visitor.id == chatUser.id) ? &#39;selected-user&#39; : &#39;&#39; &quot;\r\n                                        @click=&quot;fetchMessages(visitor)&quot;&gt;\r\n                                        &lt;div class=&quot;flex-shrink-0&quot;&gt;\r\n                                            &lt;img class=&quot;img-fluid&quot;\r\n                                                v-bind:src=&quot;visitor.avatar&quot;\r\n                                                alt=&quot;user img&quot;&gt;\r\n                                            &lt;span class=&quot;active&quot;&gt;&lt;/span&gt;\r\n                                        &lt;/div&gt;\r\n                                        &lt;div class=&quot;flex-grow-1 ms-3&quot;&gt;\r\n                                            &lt;h3&gt;{{ visitor.name }}&lt;/h3&gt;\r\n                                            &lt;p&gt;{{ visitor.email }}&lt;/p&gt;\r\n                                        &lt;/div&gt;\r\n                                        &lt;span class=&quot;badge text-bg-danger unread-badge&quot; v-if=&quot;contact.unread_messages_count &gt; 0&quot;&gt;{{contact.unread_messages_count}}&lt;/span&gt;\r\n                                    &lt;/a&gt;\r\n                                &lt;/template&gt; --></div></div></div></div></div></div>", 1);
-var _hoisted_3 = {
-  "class": "chatbox"
+var _hoisted_2 = {
+  "class": "chatlist p-0"
 };
-var _hoisted_4 = {
+var _hoisted_3 = {
   "class": "modal-dialog-scrollable"
 };
-var _hoisted_5 = {
-  "class": "modal-content",
-  id: "chatBox"
+var _hoisted_4 = {
+  "class": "modal-content"
 };
-var _hoisted_6 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
-  "class": "msg-head"
-}, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
-  "class": "row"
-}, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
-  "class": "col-8"
-}, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
-  "class": "d-flex align-items-center"
-}, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <span class=\"chat-icon\"><img class=\"img-fluid avatar\"\r\n                                                v-bind:src=\"chatUser.avatar\"\r\n                                                alt=\"image title\"></span>\r\n                                        <div class=\"flex-shrink-0\">\r\n                                            <img class=\"img-fluid avatar\" v-bind:src=\"chatUser.avatar\" alt=\"user img\">\r\n                                        </div>\r\n                                        <div class=\"flex-grow-1 ms-3\">\r\n                                            <h3>{{ chatUser.name }}</h3>\r\n                                            <p>{{ chatUser.email }}</p>\r\n                                        </div> ")])])])], -1 /* HOISTED */);
+var _hoisted_5 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createStaticVNode)("<div class=\"chat-header p-3\"><div class=\"msg-search\"><input type=\"text\" class=\"form-control\" id=\"inlineFormInputGroup\" placeholder=\"Search\" aria-label=\"search\"><a class=\"add\" href=\"#\"><img class=\"img-fluid\" src=\"https://mehedihtml.com/chatbox/assets/img/add.svg\" alt=\"add\"></a></div></div>", 1);
+var _hoisted_6 = {
+  "class": "modal-body mt-1 border-top"
+};
 var _hoisted_7 = {
+  "class": "chat-lists"
+};
+var _hoisted_8 = {
+  "class": "chat-list"
+};
+var _hoisted_9 = ["onClick"];
+var _hoisted_10 = {
+  "class": "flex-shrink-0"
+};
+var _hoisted_11 = ["src"];
+var _hoisted_12 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
+  "class": "active"
+}, null, -1 /* HOISTED */);
+var _hoisted_13 = {
+  "class": "flex-grow-1 ms-3"
+};
+var _hoisted_14 = {
+  "class": "chatbox"
+};
+var _hoisted_15 = {
+  "class": "modal-dialog-scrollable"
+};
+var _hoisted_16 = {
+  "class": "modal-content"
+};
+var _hoisted_17 = {
+  "class": "msg-head"
+};
+var _hoisted_18 = {
+  "class": "row"
+};
+var _hoisted_19 = {
+  "class": "col-8"
+};
+var _hoisted_20 = {
+  "class": "d-flex align-items-center"
+};
+var _hoisted_21 = {
+  "class": "flex-grow-1 ms-3"
+};
+var _hoisted_22 = {
+  "class": "col-md-4"
+};
+var _hoisted_23 = ["selected"];
+var _hoisted_24 = ["selected"];
+var _hoisted_25 = {
   "class": "scrollable modal-body",
   ref: "hasScrolledToBottom"
 };
-var _hoisted_8 = {
+var _hoisted_26 = {
+  "class": "msg-body"
+};
+var _hoisted_27 = {
+  "class": ""
+};
+var _hoisted_28 = {
   key: 0,
-  "class": "msg-body"
+  "class": "sender"
 };
-var _hoisted_9 = {
-  "class": "form-inner"
-};
-var _hoisted_10 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h1", null, "Login to FireChat", -1 /* HOISTED */);
-var _hoisted_11 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-  "for": "username"
-}, "Username", -1 /* HOISTED */);
-var _hoisted_12 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
-  type: "submit",
-  value: "Login"
+var _hoisted_29 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
+  "class": ""
 }, null, -1 /* HOISTED */);
-var _hoisted_13 = {
+var _hoisted_30 = {
   key: 1,
-  "class": "msg-body"
+  "class": "repaly"
 };
-var _hoisted_14 = {
+var _hoisted_31 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
   "class": ""
+}, " You : ", -1 /* HOISTED */);
+var _hoisted_32 = {
+  "class": "send-box position-relative d-none",
+  id: "chatBox"
 };
-var _hoisted_15 = {
-  "class": ""
-};
-var _hoisted_16 = {
-  "class": "send-box position-relative"
-};
-var _hoisted_17 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+var _hoisted_33 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
   type: "submit",
   id: "btn-chat"
 }, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
@@ -41826,25 +41917,36 @@ var _hoisted_17 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElement
 }), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Send ")], -1 /* HOISTED */);
 
 function render(_ctx, _cache, $props, $setup, $data, $options) {
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" chatlist "), _hoisted_2, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" chatbox "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, [_hoisted_6, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_7, [$setup.state.username === '' || $setup.state.username === null ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_8, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("form", {
-    "class": "login-form",
-    onSubmit: _cache[1] || (_cache[1] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function () {
-      return $setup.Login && $setup.Login.apply($setup, arguments);
-    }, ["prevent"]))
-  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_9, [_hoisted_10, _hoisted_11, (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
-    type: "text",
-    "onUpdate:modelValue": _cache[0] || (_cache[0] = function ($event) {
-      return $setup.inputUsername = $event;
-    }),
-    placeholder: "Please enter your username..."
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $setup.inputUsername]]), _hoisted_12])], 32 /* HYDRATE_EVENTS */)])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_13, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("ul", _hoisted_14, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($setup.state.messages, function (message) {
-    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("li", {
-      key: message.key,
-      "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(message.username == $setup.state.username ? 'repaly' : 'sender')
-    }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_15, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(message.username == $setup.state.username ? 'You' : message.username) + " : ", 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(message.content), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <span class=\"time\">{{ message.created_at }}</span> ")], 2 /* CLASS */);
-  }), 128 /* KEYED_FRAGMENT */))])])), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <div class=\"w-100 h-100 d-flex justify-content-center align-items-center\" v-else>\r\n                            <h5>Say Hi to <span style=\"font-weight: 600;\">{{ chatUser.name }}</span> 👋</h5>\r\n                        </div> ")], 512 /* NEED_PATCH */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_16, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("form", {
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" chatlist "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [_hoisted_5, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_7, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_8, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($setup.visitors, function (visitor) {
+    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("a", {
+      href: "javascript:void(0)",
+      "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(["d-flex align-items-center px-3 py-2", visitor.visitor_id == $setup.state.visitor ? 'selected-user' : '']),
+      onClick: function onClick($event) {
+        return $setup.fetchMessages(visitor.visitor_id, visitor.name, visitor.email);
+      }
+    }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_10, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("img", {
+      "class": "img-fluid",
+      src: visitor.avatar,
+      alt: "user img"
+    }, null, 8 /* PROPS */, _hoisted_11), _hoisted_12]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_13, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h3", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(visitor.name), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(visitor.email), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <span class=\"badge text-bg-danger unread-badge\" v-if=\"contact.unread_messages_count > 0\">{{contact.unread_messages_count}}</span> ")], 10 /* CLASS, PROPS */, _hoisted_9);
+  }), 256 /* UNKEYED_FRAGMENT */))])])])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" chatbox "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_14, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_15, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_16, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_17, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_18, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_19, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_20, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_21, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h3", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($setup.state.visitorname), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($setup.state.visitoremail), 1 /* TEXT */)])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_22, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
+    "class": "form-control ms-auto",
+    onChange: _cache[0] || (_cache[0] = function () {
+      return $setup.changeStatus && $setup.changeStatus.apply($setup, arguments);
+    })
+  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+    value: "1",
+    selected: $setup.operatorStatus == 1 ? true : false
+  }, "Online", 8 /* PROPS */, _hoisted_23), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+    value: "0",
+    selected: $setup.operatorStatus == 0 ? true : false
+  }, "Offline", 8 /* PROPS */, _hoisted_24)], 32 /* HYDRATE_EVENTS */)])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_25, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_26, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("ul", _hoisted_27, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($setup.state.messages, function (message) {
+    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+      key: message.key
+    }, [message.sender == $setup.state.visitor ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("li", _hoisted_28, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, [_hoisted_29, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(message.content), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <span class=\"time\">{{ message.created_at }}</span> ")])) : message.sender == $setup.state.operator ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("li", _hoisted_30, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, [_hoisted_31, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(message.content), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <span class=\"time\">{{ message.created_at }}</span> ")])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)], 64 /* STABLE_FRAGMENT */);
+  }), 128 /* KEYED_FRAGMENT */))])])], 512 /* NEED_PATCH */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_32, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("form", {
     action: "javascript:void(0)",
-    onSubmit: _cache[4] || (_cache[4] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function () {
+    onSubmit: _cache[3] || (_cache[3] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function () {
       return $setup.SendMessage && $setup.SendMessage.apply($setup, arguments);
     }, ["prevent"]))
   }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <EmojiPicker :display-recent=\"true\" :disableSkinTones=\"false\" @select=\"onSelectEmoji\" class=\"d-none\" />\r\n                            <a tabindex=\"0\" class=\"p-2\" role=\"button\" @click=\"showEmoji\" >😀</a> "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
@@ -41852,13 +41954,13 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "class": "form-control",
     "aria-label": "message…",
     placeholder: "Write message…",
-    "onUpdate:modelValue": _cache[2] || (_cache[2] = function ($event) {
+    "onUpdate:modelValue": _cache[1] || (_cache[1] = function ($event) {
       return $setup.inputMessage = $event;
     }),
-    onKeyup: _cache[3] || (_cache[3] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withKeys)(function () {
+    onKeyup: _cache[2] || (_cache[2] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withKeys)(function () {
       return $setup.SendMessage && $setup.SendMessage.apply($setup, arguments);
     }, ["enter"]))
-  }, null, 544 /* HYDRATE_EVENTS, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $setup.inputMessage]]), _hoisted_17], 32 /* HYDRATE_EVENTS */)])])])])]);
+  }, null, 544 /* HYDRATE_EVENTS, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $setup.inputMessage]]), _hoisted_33], 32 /* HYDRATE_EVENTS */)])])])])]);
 }
 
 /***/ }),
@@ -47251,7 +47353,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "/* **********************************\r\nReset CSS\r\n************************************** */\r\n\r\nhtml,\r\nbody,\r\ndiv,\r\nspan,\r\napplet,\r\nobject,\r\niframe,\r\nh1,\r\nh2,\r\nh3,\r\nh4,\r\nh5,\r\nh6,\r\np,\r\nblockquote,\r\npre,\r\na,\r\nabbr,\r\nacronym,\r\naddress,\r\nbig,\r\ncite,\r\ncode,\r\ndel,\r\ndfn,\r\nem,\r\nimg,\r\nins,\r\nkbd,\r\nq,\r\ns,\r\nsamp,\r\nsmall,\r\nstrike,\r\nstrong,\r\nsub,\r\nsup,\r\ntt,\r\nvar,\r\nb,\r\nu,\r\ni,\r\ncenter,\r\ndl,\r\ndt,\r\ndd,\r\nol,\r\nul,\r\nli,\r\nfieldset,\r\nform,\r\nlabel,\r\nlegend,\r\ntable,\r\ncaption,\r\ntbody,\r\ntfoot,\r\nthead,\r\ntr,\r\nth,\r\ntd,\r\narticle,\r\naside,\r\ncanvas,\r\ndetails,\r\nembed,\r\nfigure,\r\nfigcaption,\r\nfooter,\r\nheader,\r\nhgroup,\r\nmenu,\r\nnav,\r\noutput,\r\nruby,\r\nsection,\r\nsummary,\r\ntime,\r\nmark,\r\naudio,\r\nvideo {\r\n    margin: 0;\r\n    padding: 0;\r\n    border: 0;\r\n    font-size: 100%;\r\n    font: inherit;\r\n    vertical-align: baseline;\r\n}\r\n\r\n\r\n/* HTML5 display-role reset for older browsers */\r\n\r\narticle,\r\naside,\r\ndetails,\r\nfigcaption,\r\nfigure,\r\nfooter,\r\nheader,\r\nhgroup,\r\nmenu,\r\nnav,\r\nsection {\r\n    display: block;\r\n}\r\n\r\nbody {\r\n    line-height: 1.5;\r\n}\r\n\r\nol,\r\nul {\r\n    list-style: none;\r\n}\r\n\r\nblockquote,\r\nq {\r\n    quotes: none;\r\n}\r\n\r\nblockquote:before,\r\nblockquote:after,\r\nq:before,\r\nq:after {\r\n    content: '';\r\n    content: none;\r\n}\r\n\r\ntable {\r\n    border-collapse: collapse;\r\n    border-spacing: 0;\r\n}\r\n\r\n\r\n/********************************\r\n Typography Style\r\n******************************** */\r\n\r\nbody {\r\n    margin: 0;\r\n    font-family: 'Open Sans', sans-serif;\r\n    line-height: 1.5;\r\n    -webkit-font-smoothing: antialiased;\r\n    -moz-osx-font-smoothing: grayscale;\r\n}\r\n\r\nhtml {\r\n    min-height: 100%;\r\n    -webkit-font-smoothing: antialiased;\r\n    -moz-osx-font-smoothing: grayscale;\r\n}\r\n\r\nh1 {\r\n    font-size: 36px;\r\n}\r\n\r\nh2 {\r\n    font-size: 30px;\r\n}\r\n\r\nh3 {\r\n    font-size: 26px;\r\n}\r\n\r\nh4 {\r\n    font-size: 22px;\r\n}\r\n\r\nh5 {\r\n    font-size: 18px;\r\n}\r\n\r\nh6 {\r\n    font-size: 16px;\r\n}\r\n\r\np {\r\n    font-size: 15px;\r\n}\r\n\r\na {\r\n    text-decoration: none;\r\n    font-size: 15px;\r\n}\r\n\r\n* {\r\n  margin-bottom: 0;\r\n}\r\n\r\n.modal-dialog-scrollable .modal-body::-webkit-scrollbar {\r\n    width: 4px;\r\n    border-radius: 3px;\r\n}\r\n\r\n/* Track */\r\n.modal-dialog-scrollable .modal-body::-webkit-scrollbar-track {\r\n    background: #f1f1f1;\r\n}\r\n\r\n/* Handle */\r\n.modal-dialog-scrollable .modal-body::-webkit-scrollbar-thumb {\r\n    background: #cacaca;\r\n}\r\n\r\n/* Handle on hover */\r\n.modal-dialog-scrollable .modal-body::-webkit-scrollbar-thumb:hover {\r\n    background: #aaaaaa;\r\n}\r\n\r\n/* *******************************\r\nmessage-area\r\n******************************** */\r\n\r\n.message-area {\r\n    height: 100vh;\r\n    overflow: hidden;\r\n    padding: 30px 0;\r\n    background: #f5f5f5;\r\n}\r\n\r\n.chat-area {\r\n    position: relative;\r\n    width: 100%;\r\n    background-color: #fff;\r\n    border-radius: 0.3rem;\r\n    height: 83vh;\r\n    overflow: hidden;\r\n    min-height: calc(100% - 1rem);\r\n}\r\n\r\n.chatlist {\r\n    outline: 0;\r\n    height: 100%;\r\n    overflow: hidden;\r\n    width: 300px;\r\n    float: left;\r\n    padding: 15px;\r\n}\r\n.chatlist a img, .msg-head img.avatar {\r\n    width: 50px;\r\n    height: 50px;\r\n    border-radius: 25px;\r\n}\r\n\r\n.chat-area .modal-content {\r\n    border: none;\r\n    border-radius: 0;\r\n    outline: 0;\r\n    height: 100%;\r\n}\r\n\r\n.chat-area .modal-dialog-scrollable {\r\n    height: 100% !important;\r\n}\r\n\r\n.chatbox {\r\n    width: auto;\r\n    overflow: hidden;\r\n    height: 100%;\r\n    border-left: 1px solid #ccc;\r\n}\r\n\r\n.chatbox .modal-dialog,\r\n.chatlist .modal-dialog {\r\n    max-width: 100%;\r\n    margin: 0;\r\n}\r\n\r\n.msg-search {\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: space-between;\r\n}\r\n\r\n.chat-area .form-control {\r\n    display: block;\r\n    width: 80%;\r\n    padding: 0.375rem 0.75rem;\r\n    font-size: 14px;\r\n    font-weight: 400;\r\n    line-height: 1.5;\r\n    color: #222;\r\n    background-color: #fff;\r\n    background-clip: padding-box;\r\n    border: 1px solid #ccc;\r\n    -webkit-appearance: none;\r\n    -moz-appearance: none;\r\n    appearance: none;\r\n    border-radius: 0.25rem;\r\n    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;\r\n}\r\n\r\n.chat-area .form-control:focus {\r\n    outline: 0;\r\n    box-shadow: inherit;\r\n}\r\n\r\na.add img {\r\n    height: 36px;\r\n}\r\n\r\n.chat-area .nav-tabs {\r\n    border-bottom: 1px solid #dee2e6;\r\n    align-items: center;\r\n    justify-content: space-between;\r\n    flex-wrap: inherit;\r\n}\r\n\r\n.chat-area .nav-tabs .nav-item {\r\n    width: 100%;\r\n}\r\n\r\n.chat-area .nav-tabs .nav-link {\r\n    width: 100%;\r\n    color: #180660;\r\n    font-size: 14px;\r\n    font-weight: 500;\r\n    line-height: 1.5;\r\n    text-transform: capitalize;\r\n    margin-top: 5px;\r\n    margin-bottom: -1px;\r\n    background: 0 0;\r\n    border: 1px solid transparent;\r\n    border-top-left-radius: 0.25rem;\r\n    border-top-right-radius: 0.25rem;\r\n}\r\n\r\n.chat-area .nav-tabs .nav-item.show .nav-link,\r\n.chat-area .nav-tabs .nav-link.active {\r\n    color: #222;\r\n    background-color: #fff;\r\n    border-color: transparent transparent #000;\r\n}\r\n\r\n.chat-area .nav-tabs .nav-link:focus,\r\n.chat-area .nav-tabs .nav-link:hover {\r\n    border-color: transparent transparent #000;\r\n    isolation: isolate;\r\n}\r\n\r\n.chat-list h3 {\r\n    color: #222;\r\n    font-size: 16px;\r\n    font-weight: 500;\r\n    line-height: 1.5;\r\n    text-transform: capitalize;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.chat-list p {\r\n    color: #343434;\r\n    font-size: 14px;\r\n    font-weight: 400;\r\n    line-height: 1.5;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.chat-list a.d-flex {\r\n    margin: 0px 2px 2px 2px;\r\n    position: relative;\r\n    text-decoration: none;\r\n}\r\n.chat-list a.selected-user{\r\n    background-color: #a23dff;\r\n    border-radius: 10px;\r\n}\r\n.chat-list a.selected-user h3{\r\n    color: #f6f6f6;\r\n    font-weight: 600;\r\n}\r\n.chat-list a.selected-user p{\r\n    color: #e6e6e6;\r\n}\r\n\r\n.chat-list .active {\r\n    display: block;\r\n    content: '';\r\n    clear: both;\r\n    position: absolute;\r\n    bottom: 12px;\r\n    left: 49px;\r\n    height: 12px;\r\n    width: 12px;\r\n    background: #00DB75;\r\n    border-radius: 50%;\r\n    border: 2px solid #fff;\r\n}\r\n\r\n.msg-head h3 {\r\n    color: #222;\r\n    font-size: 18px;\r\n    font-weight: 600;\r\n    text-transform: capitalize;\r\n    line-height: 1.5;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.msg-head p {\r\n    color: #343434;\r\n    font-size: 14px;\r\n    font-weight: 400;\r\n    line-height: 1.5;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.msg-head {\r\n    padding: 15px;\r\n    border-bottom: 1px solid #ccc;\r\n}\r\n\r\n.moreoption {\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: end;\r\n}\r\n\r\n.moreoption .navbar {\r\n    padding: 0;\r\n}\r\n\r\n.moreoption li .nav-link {\r\n    color: #222;\r\n    font-size: 16px;\r\n}\r\n\r\n.moreoption .dropdown-toggle::after {\r\n    display: none;\r\n}\r\n\r\n.moreoption .dropdown-menu[data-bs-popper] {\r\n    top: 100%;\r\n    left: auto;\r\n    right: 0;\r\n    margin-top: 0.125rem;\r\n}\r\n\r\n.msg-body ul {\r\n    overflow: hidden;\r\n}\r\n\r\n.msg-body ul li {\r\n    list-style: none;\r\n    margin: 15px 0;\r\n}\r\n\r\n.msg-body ul li.sender {\r\n    display: block;\r\n    width: 100%;\r\n    position: relative;\r\n}\r\n\r\n.msg-body ul li.sender:before {\r\n    display: block;\r\n    clear: both;\r\n    content: '';\r\n    position: absolute;\r\n    top: -6px;\r\n    left: -2px;\r\n    width: 0;\r\n    height: 0;\r\n    border-style: solid;\r\n    border-width: 0 12px 15px 12px;\r\n    border-color: transparent transparent #a23dff transparent;\r\n    -webkit-transform: rotate(-37deg);\r\n    -ms-transform: rotate(-37deg);\r\n    transform: rotate(-37deg);\r\n}\r\n\r\n.msg-body ul li.sender p {\r\n    color: #f5f5f5;\r\n    font-size: 14px;\r\n    line-height: 1.5;\r\n    font-weight: 400;\r\n    padding: 15px;\r\n    margin-left: 5px;\r\n    background: #a23dff;\r\n    display: inline-block;\r\n    border-bottom-left-radius: 10px;\r\n    border-top-right-radius: 10px;\r\n    border-bottom-right-radius: 10px;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.msg-body ul li.sender p b {\r\n    display: block;\r\n    color: #180660;\r\n    font-size: 14px;\r\n    line-height: 1.5;\r\n    font-weight: 500;\r\n}\r\n\r\n.msg-body ul li p span {\r\n    font-weight: 600;\r\n}\r\n\r\n.msg-body ul li.repaly {\r\n    display: block;\r\n    width: 100%;\r\n    text-align: right;\r\n    position: relative;\r\n}\r\n\r\n.msg-body ul li.repaly:before {\r\n    display: block;\r\n    clear: both;\r\n    content: '';\r\n    position: absolute;\r\n    bottom: 15px;\r\n    right: -2px;\r\n    width: 0;\r\n    height: 0;\r\n    border-style: solid;\r\n    border-width: 0 12px 15px 12px;\r\n    border-color: transparent transparent #f5f5f5 transparent;\r\n    -webkit-transform: rotate(37deg);\r\n    -ms-transform: rotate(37deg);\r\n    transform: rotate(37deg);\r\n}\r\n\r\n.msg-body ul li.repaly p {\r\n    color: #333;\r\n    font-size: 14px;\r\n    line-height: 1.5;\r\n    font-weight: 400;\r\n    padding: 15px;\r\n    margin-right: 5px;\r\n    background: #f5f5f5;\r\n    display: inline-block;\r\n    border-top-left-radius: 10px;\r\n    border-top-right-radius: 10px;\r\n    border-bottom-left-radius: 10px;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.msg-body ul li.repaly p b {\r\n    display: block;\r\n    color: #061061;\r\n    font-size: 14px;\r\n    line-height: 1.5;\r\n    font-weight: 500;\r\n}\r\n\r\n.msg-body ul li.repaly:after {\r\n    display: block;\r\n    content: '';\r\n    clear: both;\r\n}\r\n\r\n.time {\r\n    display: block;\r\n    color: #000;\r\n    margin-left: 15px;\r\n    font-size: 12px;\r\n    line-height: 1.5;\r\n    font-weight: 400;\r\n}\r\n\r\nli.repaly .time {\r\n    margin-right: 20px;\r\n}\r\n\r\n.divider {\r\n    position: relative;\r\n    z-index: 1;\r\n    text-align: center;\r\n}\r\n\r\n.msg-body h6 {\r\n    text-align: center;\r\n    font-weight: normal;\r\n    font-size: 14px;\r\n    line-height: 1.5;\r\n    color: #222;\r\n    background: #fff;\r\n    display: inline-block;\r\n    padding: 0 5px;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.divider:after {\r\n    display: block;\r\n    content: '';\r\n    clear: both;\r\n    position: absolute;\r\n    top: 12px;\r\n    left: 0;\r\n    border-top: 1px solid #EBEBEB;\r\n    width: 100%;\r\n    height: 100%;\r\n    z-index: -1;\r\n}\r\n\r\n.send-box {\r\n    padding: 15px;\r\n    border-top: 1px solid #ccc;\r\n}\r\n\r\n.send-box form {\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: space-between;\r\n}\r\n\r\n.send-box .form-control {\r\n    display: block;\r\n    width: 85%;\r\n    padding: 0.375rem 0.75rem;\r\n    font-size: 14px;\r\n    font-weight: 400;\r\n    line-height: 1.5;\r\n    color: #222;\r\n    background-color: #fff;\r\n    background-clip: padding-box;\r\n    border: 1px solid #ccc;\r\n    -webkit-appearance: none;\r\n    -moz-appearance: none;\r\n    appearance: none;\r\n    border-radius: 0.25rem;\r\n    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;\r\n}\r\n\r\n.send-box button {\r\n    border: none;\r\n    background: #a23dff;\r\n    padding: 0.375rem 5px;\r\n    color: #fff;\r\n    border-radius: 0.25rem;\r\n    font-size: 14px;\r\n    font-weight: 400;\r\n    width: 24%;\r\n    margin-left: 1%;\r\n}\r\n\r\n.send-box button i {\r\n    margin-right: 5px;\r\n}\r\n\r\n.send-btns .button-wrapper {\r\n    position: relative;\r\n    width: 125px;\r\n    height: auto;\r\n    text-align: left;\r\n    margin: 0 auto;\r\n    display: block;\r\n    background: #F6F7FA;\r\n    border-radius: 3px;\r\n    padding: 5px 15px;\r\n    float: left;\r\n    margin-right: 5px;\r\n    margin-bottom: 5px;\r\n    overflow: hidden;\r\n}\r\n\r\n.send-btns .button-wrapper span.label {\r\n    position: relative;\r\n    z-index: 1;\r\n    display: -webkit-box;\r\n    display: -ms-flexbox;\r\n    display: flex;\r\n    -webkit-box-align: center;\r\n    -ms-flex-align: center;\r\n    align-items: center;\r\n    width: 100%;\r\n    cursor: pointer;\r\n    color: #343945;\r\n    font-weight: 400;\r\n    text-transform: capitalize;\r\n    font-size: 13px;\r\n}\r\n\r\n#upload {\r\n    display: inline-block;\r\n    position: absolute;\r\n    z-index: 1;\r\n    width: 100%;\r\n    height: 100%;\r\n    top: 0;\r\n    left: 0;\r\n    opacity: 0;\r\n    cursor: pointer;\r\n}\r\n\r\n.send-btns .attach .form-control {\r\n    display: inline-block;\r\n    width: 120px;\r\n    height: auto;\r\n    padding: 5px 8px;\r\n    font-size: 13px;\r\n    font-weight: 400;\r\n    line-height: 1.5;\r\n    color: #343945;\r\n    background-color: #F6F7FA;\r\n    background-clip: padding-box;\r\n    border: 1px solid #F6F7FA;\r\n    border-radius: 3px;\r\n    margin-bottom: 5px;\r\n}\r\n\r\n.send-btns .button-wrapper span.label img {\r\n    margin-right: 5px;\r\n}\r\n\r\n.button-wrapper {\r\n    position: relative;\r\n    width: 100px;\r\n    height: 100px;\r\n    text-align: center;\r\n    margin: 0 auto;\r\n}\r\n\r\nbutton:focus {\r\n    outline: 0;\r\n}\r\n\r\n.add-apoint {\r\n    display: inline-block;\r\n    margin-left: 5px;\r\n}\r\n\r\n.add-apoint a {\r\n    text-decoration: none;\r\n    background: #F6F7FA;\r\n    border-radius: 8px;\r\n    padding: 8px 8px;\r\n    font-size: 13px;\r\n    font-weight: 400;\r\n    line-height: 1.2;\r\n    color: #343945;\r\n}\r\n\r\n.add-apoint a svg {\r\n    margin-right: 5px;\r\n}\r\n\r\n.chat-icon {\r\n    display: none;\r\n}\r\n\r\n.closess i {\r\n    display: none;\r\n}\r\n\r\n\r\n\r\n@media (max-width: 767px) {\r\n    .chat-icon {\r\n        display: block;\r\n        margin-right: 5px;\r\n    }\r\n    .chatlist {\r\n        width: 100%;\r\n    }\r\n    .chatbox {\r\n        width: 100%;\r\n        position: absolute;\r\n        left: 1000px;\r\n        right: 0;\r\n        background: #fff;\r\n        transition: all 0.5s ease;\r\n        border-left: none;\r\n    }\r\n    .showbox {\r\n        left: 0 !important;\r\n        transition: all 0.5s ease;\r\n    }\r\n    .msg-head h3 {\r\n        text-transform: capitalize;\r\n        font-size: 14px;\r\n    }\r\n    .msg-head p {\r\n        font-size: 12px;\r\n    }\r\n    .msg-head .flex-shrink-0 img {\r\n        height: 30px;\r\n    }\r\n    .send-box button {\r\n        width: 28%;\r\n    }\r\n    .send-box .form-control {\r\n        width: 70%;\r\n    }\r\n    .chat-list h3 {\r\n        font-size: 14px;\r\n    }\r\n    .chat-list p {\r\n        font-size: 12px;\r\n    }\r\n    .msg-body ul li.sender p {\r\n        font-size: 13px;\r\n        padding: 8px;\r\n        border-bottom-left-radius: 6px;\r\n        border-top-right-radius: 6px;\r\n        border-bottom-right-radius: 6px;\r\n    }\r\n    .msg-body ul li.repaly p {\r\n        font-size: 13px;\r\n        padding: 8px;\r\n        border-top-left-radius: 6px;\r\n        border-top-right-radius: 6px;\r\n        border-bottom-left-radius: 6px;\r\n    }\r\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "/* **********************************\r\nReset CSS\r\n************************************** */\r\n\r\nhtml,\r\nbody,\r\ndiv,\r\nspan,\r\napplet,\r\nobject,\r\niframe,\r\nh1,\r\nh2,\r\nh3,\r\nh4,\r\nh5,\r\nh6,\r\np,\r\nblockquote,\r\npre,\r\na,\r\nabbr,\r\nacronym,\r\naddress,\r\nbig,\r\ncite,\r\ncode,\r\ndel,\r\ndfn,\r\nem,\r\nimg,\r\nins,\r\nkbd,\r\nq,\r\ns,\r\nsamp,\r\nsmall,\r\nstrike,\r\nstrong,\r\nsub,\r\nsup,\r\ntt,\r\nvar,\r\nb,\r\nu,\r\ni,\r\ncenter,\r\ndl,\r\ndt,\r\ndd,\r\nol,\r\nul,\r\nli,\r\nfieldset,\r\nform,\r\nlabel,\r\nlegend,\r\ntable,\r\ncaption,\r\ntbody,\r\ntfoot,\r\nthead,\r\ntr,\r\nth,\r\ntd,\r\narticle,\r\naside,\r\ncanvas,\r\ndetails,\r\nembed,\r\nfigure,\r\nfigcaption,\r\nfooter,\r\nheader,\r\nhgroup,\r\nmenu,\r\nnav,\r\noutput,\r\nruby,\r\nsection,\r\nsummary,\r\ntime,\r\nmark,\r\naudio,\r\nvideo {\r\n    margin: 0;\r\n    padding: 0;\r\n    border: 0;\r\n    font-size: 100%;\r\n    font: inherit;\r\n    vertical-align: baseline;\r\n}\r\n\r\n\r\n/* HTML5 display-role reset for older browsers */\r\n\r\narticle,\r\naside,\r\ndetails,\r\nfigcaption,\r\nfigure,\r\nfooter,\r\nheader,\r\nhgroup,\r\nmenu,\r\nnav,\r\nsection {\r\n    display: block;\r\n}\r\n\r\nbody {\r\n    line-height: 1.5;\r\n}\r\n\r\nol,\r\nul {\r\n    list-style: none;\r\n}\r\n\r\nblockquote,\r\nq {\r\n    quotes: none;\r\n}\r\n\r\nblockquote:before,\r\nblockquote:after,\r\nq:before,\r\nq:after {\r\n    content: '';\r\n    content: none;\r\n}\r\n\r\ntable {\r\n    border-collapse: collapse;\r\n    border-spacing: 0;\r\n}\r\n\r\n\r\n/********************************\r\n Typography Style\r\n******************************** */\r\n\r\nbody {\r\n    margin: 0;\r\n    font-family: 'Open Sans', sans-serif;\r\n    line-height: 1.5;\r\n    -webkit-font-smoothing: antialiased;\r\n    -moz-osx-font-smoothing: grayscale;\r\n}\r\n\r\nhtml {\r\n    min-height: 100%;\r\n    -webkit-font-smoothing: antialiased;\r\n    -moz-osx-font-smoothing: grayscale;\r\n}\r\n\r\nh1 {\r\n    font-size: 36px;\r\n}\r\n\r\nh2 {\r\n    font-size: 30px;\r\n}\r\n\r\nh3 {\r\n    font-size: 26px;\r\n}\r\n\r\nh4 {\r\n    font-size: 22px;\r\n}\r\n\r\nh5 {\r\n    font-size: 18px;\r\n}\r\n\r\nh6 {\r\n    font-size: 16px;\r\n}\r\n\r\np {\r\n    font-size: 15px;\r\n}\r\n\r\na {\r\n    text-decoration: none;\r\n    font-size: 15px;\r\n}\r\n\r\n* {\r\n  margin-bottom: 0;\r\n}\r\n\r\n.modal-dialog-scrollable .modal-body::-webkit-scrollbar {\r\n    width: 4px;\r\n    border-radius: 3px;\r\n}\r\n\r\n/* Track */\r\n.modal-dialog-scrollable .modal-body::-webkit-scrollbar-track {\r\n    background: #f1f1f1;\r\n}\r\n\r\n/* Handle */\r\n.modal-dialog-scrollable .modal-body::-webkit-scrollbar-thumb {\r\n    background: #cacaca;\r\n}\r\n\r\n/* Handle on hover */\r\n.modal-dialog-scrollable .modal-body::-webkit-scrollbar-thumb:hover {\r\n    background: #aaaaaa;\r\n}\r\n\r\n/* *******************************\r\nmessage-area\r\n******************************** */\r\n\r\n.message-area {\r\n    height: 100vh;\r\n    overflow: hidden;\r\n    padding: 30px 0;\r\n    background: #f5f5f5;\r\n}\r\n\r\n.chat-area {\r\n    position: relative;\r\n    width: 100%;\r\n    background-color: #fff;\r\n    border-radius: 0.3rem;\r\n    height: 83vh;\r\n    overflow: hidden;\r\n    min-height: calc(100% - 1rem);\r\n}\r\n\r\n.chatlist {\r\n    outline: 0;\r\n    height: 100%;\r\n    overflow: hidden;\r\n    width: 300px;\r\n    float: left;\r\n    padding: 15px;\r\n}\r\n.chatlist a img, .msg-head img.avatar {\r\n    width: 50px;\r\n    height: 50px;\r\n    border-radius: 25px;\r\n}\r\n\r\n.chat-area .modal-content {\r\n    border: none;\r\n    border-radius: 0;\r\n    outline: 0;\r\n    height: 100%;\r\n}\r\n\r\n.chat-area .modal-dialog-scrollable {\r\n    height: 100% !important;\r\n}\r\n\r\n.chatbox {\r\n    width: auto;\r\n    overflow: hidden;\r\n    height: 100%;\r\n    border-left: 1px solid #ccc;\r\n}\r\n\r\n.chatbox .modal-dialog,\r\n.chatlist .modal-dialog {\r\n    max-width: 100%;\r\n    margin: 0;\r\n}\r\n\r\n.msg-search {\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: space-between;\r\n}\r\n\r\n.chat-area .form-control {\r\n    display: block;\r\n    width: 80%;\r\n    padding: 0.375rem 0.75rem;\r\n    font-size: 14px;\r\n    font-weight: 400;\r\n    line-height: 1.5;\r\n    color: #222;\r\n    background-color: #fff;\r\n    background-clip: padding-box;\r\n    border: 1px solid #ccc;\r\n    -webkit-appearance: none;\r\n    -moz-appearance: none;\r\n    appearance: none;\r\n    border-radius: 0.25rem;\r\n    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;\r\n}\r\n\r\n.chat-area .form-control:focus {\r\n    outline: 0;\r\n    box-shadow: inherit;\r\n}\r\n\r\na.add img {\r\n    height: 36px;\r\n}\r\n\r\n.chat-area .nav-tabs {\r\n    border-bottom: 1px solid #dee2e6;\r\n    align-items: center;\r\n    justify-content: space-between;\r\n    flex-wrap: inherit;\r\n}\r\n\r\n.chat-area .nav-tabs .nav-item {\r\n    width: 100%;\r\n}\r\n\r\n.chat-area .nav-tabs .nav-link {\r\n    width: 100%;\r\n    color: #180660;\r\n    font-size: 14px;\r\n    font-weight: 500;\r\n    line-height: 1.5;\r\n    text-transform: capitalize;\r\n    margin-top: 5px;\r\n    margin-bottom: -1px;\r\n    background: 0 0;\r\n    border: 1px solid transparent;\r\n    border-top-left-radius: 0.25rem;\r\n    border-top-right-radius: 0.25rem;\r\n}\r\n\r\n.chat-area .nav-tabs .nav-item.show .nav-link,\r\n.chat-area .nav-tabs .nav-link.active {\r\n    color: #222;\r\n    background-color: #fff;\r\n    border-color: transparent transparent #000;\r\n}\r\n\r\n.chat-area .nav-tabs .nav-link:focus,\r\n.chat-area .nav-tabs .nav-link:hover {\r\n    border-color: transparent transparent #000;\r\n    isolation: isolate;\r\n}\r\n\r\n.chat-list h3 {\r\n    color: #222;\r\n    font-size: 16px;\r\n    font-weight: 500;\r\n    line-height: 1.5;\r\n    text-transform: capitalize;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.chat-list p {\r\n    color: #343434;\r\n    font-size: 14px;\r\n    font-weight: 400;\r\n    line-height: 1.5;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.chat-list a.d-flex {\r\n    margin: 0px 2px 2px 2px;\r\n    position: relative;\r\n    text-decoration: none;\r\n}\r\n.chat-list a.selected-user{\r\n    background-color: #a23dff;\r\n    border-radius: 10px;\r\n}\r\n.chat-list a.selected-user h3{\r\n    color: #f6f6f6;\r\n    font-weight: 600;\r\n}\r\n.chat-list a.selected-user p{\r\n    color: #e6e6e6;\r\n}\r\n\r\n.chat-list .active {\r\n    display: block;\r\n    content: '';\r\n    clear: both;\r\n    position: absolute;\r\n    bottom: 12px;\r\n    left: 49px;\r\n    height: 12px;\r\n    width: 12px;\r\n    background: #00DB75;\r\n    border-radius: 50%;\r\n    border: 2px solid #fff;\r\n}\r\n\r\n.msg-head h3 {\r\n    color: #222;\r\n    font-size: 18px;\r\n    font-weight: 600;\r\n    text-transform: capitalize;\r\n    line-height: 1.5;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.msg-head p {\r\n    color: #343434;\r\n    font-size: 14px;\r\n    font-weight: 400;\r\n    line-height: 1.5;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.msg-head {\r\n    padding: 15px;\r\n    border-bottom: 1px solid #ccc;\r\n}\r\n\r\n.moreoption {\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: end;\r\n}\r\n\r\n.moreoption .navbar {\r\n    padding: 0;\r\n}\r\n\r\n.moreoption li .nav-link {\r\n    color: #222;\r\n    font-size: 16px;\r\n}\r\n\r\n.moreoption .dropdown-toggle::after {\r\n    display: none;\r\n}\r\n\r\n.moreoption .dropdown-menu[data-bs-popper] {\r\n    top: 100%;\r\n    left: auto;\r\n    right: 0;\r\n    margin-top: 0.125rem;\r\n}\r\n\r\n.msg-body ul {\r\n    overflow: hidden;\r\n}\r\n\r\n.msg-body ul li {\r\n    list-style: none;\r\n    margin: 15px 0;\r\n}\r\n\r\n.msg-body ul li.sender {\r\n    display: block;\r\n    width: 100%;\r\n    position: relative;\r\n}\r\n\r\n.msg-body ul li.sender:before {\r\n    display: block;\r\n    clear: both;\r\n    content: '';\r\n    position: absolute;\r\n    top: 0px;\r\n    left: -3px;\r\n    width: 0;\r\n    height: 0;\r\n    border-style: solid;\r\n    border-width: 0 12px 15px 12px;\r\n    border-color: transparent transparent #a23dff transparent;\r\n    -webkit-transform: rotate(-142deg);\r\n    -ms-transform: rotate(-142deg);\r\n    transform: rotate(-142deg);\r\n}\r\n\r\n.msg-body ul li.sender p {\r\n    color: #f5f5f5;\r\n    font-size: 14px;\r\n    line-height: 1.5;\r\n    font-weight: 400;\r\n    padding: 15px;\r\n    margin-left: 5px;\r\n    background: #a23dff;\r\n    display: inline-block;\r\n    border-bottom-left-radius: 10px;\r\n    border-top-right-radius: 10px;\r\n    border-bottom-right-radius: 10px;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.msg-body ul li.sender p b {\r\n    display: block;\r\n    color: #180660;\r\n    font-size: 14px;\r\n    line-height: 1.5;\r\n    font-weight: 500;\r\n}\r\n\r\n.msg-body ul li p span {\r\n    font-weight: 600;\r\n}\r\n\r\n.msg-body ul li.repaly {\r\n    display: block;\r\n    width: 100%;\r\n    text-align: right;\r\n    position: relative;\r\n}\r\n\r\n.msg-body ul li.repaly:before {\r\n    display: block;\r\n    clear: both;\r\n    content: '';\r\n    position: absolute;\r\n    bottom: 15px;\r\n    right: -2px;\r\n    width: 0;\r\n    height: 0;\r\n    border-style: solid;\r\n    border-width: 0 12px 15px 12px;\r\n    border-color: transparent transparent #f5f5f5 transparent;\r\n    -webkit-transform: rotate(37deg);\r\n    -ms-transform: rotate(37deg);\r\n    transform: rotate(37deg);\r\n}\r\n\r\n.msg-body ul li.repaly p {\r\n    color: #333;\r\n    font-size: 14px;\r\n    line-height: 1.5;\r\n    font-weight: 400;\r\n    padding: 15px;\r\n    margin-right: 5px;\r\n    background: #f5f5f5;\r\n    display: inline-block;\r\n    border-top-left-radius: 10px;\r\n    border-top-right-radius: 10px;\r\n    border-bottom-left-radius: 10px;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.msg-body ul li.repaly p b {\r\n    display: block;\r\n    color: #061061;\r\n    font-size: 14px;\r\n    line-height: 1.5;\r\n    font-weight: 500;\r\n}\r\n\r\n.msg-body ul li.repaly:after {\r\n    display: block;\r\n    content: '';\r\n    clear: both;\r\n}\r\n\r\n.time {\r\n    display: block;\r\n    color: #000;\r\n    margin-left: 15px;\r\n    font-size: 12px;\r\n    line-height: 1.5;\r\n    font-weight: 400;\r\n}\r\n\r\nli.repaly .time {\r\n    margin-right: 20px;\r\n}\r\n\r\n.divider {\r\n    position: relative;\r\n    z-index: 1;\r\n    text-align: center;\r\n}\r\n\r\n.msg-body h6 {\r\n    text-align: center;\r\n    font-weight: normal;\r\n    font-size: 14px;\r\n    line-height: 1.5;\r\n    color: #222;\r\n    background: #fff;\r\n    display: inline-block;\r\n    padding: 0 5px;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.divider:after {\r\n    display: block;\r\n    content: '';\r\n    clear: both;\r\n    position: absolute;\r\n    top: 12px;\r\n    left: 0;\r\n    border-top: 1px solid #EBEBEB;\r\n    width: 100%;\r\n    height: 100%;\r\n    z-index: -1;\r\n}\r\n\r\n.send-box {\r\n    padding: 15px;\r\n    border-top: 1px solid #ccc;\r\n}\r\n\r\n.send-box form {\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: space-between;\r\n}\r\n\r\n.send-box .form-control {\r\n    display: block;\r\n    width: 85%;\r\n    padding: 0.375rem 0.75rem;\r\n    font-size: 14px;\r\n    font-weight: 400;\r\n    line-height: 1.5;\r\n    color: #222;\r\n    background-color: #fff;\r\n    background-clip: padding-box;\r\n    border: 1px solid #ccc;\r\n    -webkit-appearance: none;\r\n    -moz-appearance: none;\r\n    appearance: none;\r\n    border-radius: 0.25rem;\r\n    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;\r\n}\r\n\r\n.send-box button {\r\n    border: none;\r\n    background: #a23dff;\r\n    padding: 0.375rem 5px;\r\n    color: #fff;\r\n    border-radius: 0.25rem;\r\n    font-size: 14px;\r\n    font-weight: 400;\r\n    width: 24%;\r\n    margin-left: 1%;\r\n}\r\n\r\n.send-box button i {\r\n    margin-right: 5px;\r\n}\r\n\r\n.send-btns .button-wrapper {\r\n    position: relative;\r\n    width: 125px;\r\n    height: auto;\r\n    text-align: left;\r\n    margin: 0 auto;\r\n    display: block;\r\n    background: #F6F7FA;\r\n    border-radius: 3px;\r\n    padding: 5px 15px;\r\n    float: left;\r\n    margin-right: 5px;\r\n    margin-bottom: 5px;\r\n    overflow: hidden;\r\n}\r\n\r\n.send-btns .button-wrapper span.label {\r\n    position: relative;\r\n    z-index: 1;\r\n    display: -webkit-box;\r\n    display: -ms-flexbox;\r\n    display: flex;\r\n    -webkit-box-align: center;\r\n    -ms-flex-align: center;\r\n    align-items: center;\r\n    width: 100%;\r\n    cursor: pointer;\r\n    color: #343945;\r\n    font-weight: 400;\r\n    text-transform: capitalize;\r\n    font-size: 13px;\r\n}\r\n\r\n#upload {\r\n    display: inline-block;\r\n    position: absolute;\r\n    z-index: 1;\r\n    width: 100%;\r\n    height: 100%;\r\n    top: 0;\r\n    left: 0;\r\n    opacity: 0;\r\n    cursor: pointer;\r\n}\r\n\r\n.send-btns .attach .form-control {\r\n    display: inline-block;\r\n    width: 120px;\r\n    height: auto;\r\n    padding: 5px 8px;\r\n    font-size: 13px;\r\n    font-weight: 400;\r\n    line-height: 1.5;\r\n    color: #343945;\r\n    background-color: #F6F7FA;\r\n    background-clip: padding-box;\r\n    border: 1px solid #F6F7FA;\r\n    border-radius: 3px;\r\n    margin-bottom: 5px;\r\n}\r\n\r\n.send-btns .button-wrapper span.label img {\r\n    margin-right: 5px;\r\n}\r\n\r\n.button-wrapper {\r\n    position: relative;\r\n    width: 100px;\r\n    height: 100px;\r\n    text-align: center;\r\n    margin: 0 auto;\r\n}\r\n\r\nbutton:focus {\r\n    outline: 0;\r\n}\r\n\r\n.add-apoint {\r\n    display: inline-block;\r\n    margin-left: 5px;\r\n}\r\n\r\n.add-apoint a {\r\n    text-decoration: none;\r\n    background: #F6F7FA;\r\n    border-radius: 8px;\r\n    padding: 8px 8px;\r\n    font-size: 13px;\r\n    font-weight: 400;\r\n    line-height: 1.2;\r\n    color: #343945;\r\n}\r\n\r\n.add-apoint a svg {\r\n    margin-right: 5px;\r\n}\r\n\r\n.chat-icon {\r\n    display: none;\r\n}\r\n\r\n.closess i {\r\n    display: none;\r\n}\r\n\r\n\r\n\r\n@media (max-width: 767px) {\r\n    .chat-icon {\r\n        display: block;\r\n        margin-right: 5px;\r\n    }\r\n    .chatlist {\r\n        width: 100%;\r\n    }\r\n    .chatbox {\r\n        width: 100%;\r\n        position: absolute;\r\n        left: 1000px;\r\n        right: 0;\r\n        background: #fff;\r\n        transition: all 0.5s ease;\r\n        border-left: none;\r\n    }\r\n    .showbox {\r\n        left: 0 !important;\r\n        transition: all 0.5s ease;\r\n    }\r\n    .msg-head h3 {\r\n        text-transform: capitalize;\r\n        font-size: 14px;\r\n    }\r\n    .msg-head p {\r\n        font-size: 12px;\r\n    }\r\n    .msg-head .flex-shrink-0 img {\r\n        height: 30px;\r\n    }\r\n    .send-box button {\r\n        width: 28%;\r\n    }\r\n    .send-box .form-control {\r\n        width: 70%;\r\n    }\r\n    .chat-list h3 {\r\n        font-size: 14px;\r\n    }\r\n    .chat-list p {\r\n        font-size: 12px;\r\n    }\r\n    .msg-body ul li.sender p {\r\n        font-size: 13px;\r\n        padding: 8px;\r\n        border-bottom-left-radius: 6px;\r\n        border-top-right-radius: 6px;\r\n        border-bottom-right-radius: 6px;\r\n    }\r\n    .msg-body ul li.repaly p {\r\n        font-size: 13px;\r\n        padding: 8px;\r\n        border-top-left-radius: 6px;\r\n        border-top-right-radius: 6px;\r\n        border-bottom-left-radius: 6px;\r\n    }\r\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
