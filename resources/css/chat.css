@@ -464,7 +464,7 @@ a.add img {
     height: 0;
     border-style: solid;
     border-width: 0 12px 15px 12px;
-    border-color: transparent transparent #a23dff transparent;
+    border-color: transparent transparent #b769ff transparent;
     -webkit-transform: rotate(-142deg);
     -ms-transform: rotate(-142deg);
     transform: rotate(-142deg);
@@ -477,7 +477,7 @@ a.add img {
     font-weight: 400;
     padding: 15px;
     margin-left: 5px;
-    background: #a23dff;
+    background: #b769ff;
     display: inline-block;
     border-bottom-left-radius: 10px;
     border-top-right-radius: 10px;
@@ -752,11 +752,11 @@ button:focus {
         margin-right: 5px;
     }
     .chatlist {
-        width: 100%;
+        width: 0%;
     }
     .chatbox {
         width: 100%;
-        position: absolute;
+        position: static;
         left: 1000px;
         right: 0;
         background: #fff;

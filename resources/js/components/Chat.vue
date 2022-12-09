@@ -1,15 +1,18 @@
 <style>
 @import '../../css/chat.css';
-.v3-emoji-picker{
+
+.v3-emoji-picker {
     position: absolute;
     text-align: left;
     bottom: 85%;
     left: 2%;
 }
-.v3-emoji-picker .v3-footer{
+
+.v3-emoji-picker .v3-footer {
     display: none;
 }
-.unread-badge{
+
+.unread-badge {
     font-size: 11px;
     border-radius: 25px;
     padding: 3px 5px;
@@ -34,19 +37,20 @@
                         <div class="chat-lists">
                             <div class="chat-list">
                                 <template v-for="visitor in visitors">
-                                    <a href="javascript:void(0)" class="d-flex align-items-center px-3 py-2" v-bind:class="(visitor.visitor_id == state.visitor) ? 'selected-user' : '' "
-                                        @click="fetchMessages(visitor.visitor_id,visitor.name,visitor.email)">
+                                    <a href="javascript:void(0)" class="d-flex align-items-center px-3 py-2"
+                                        v-bind:class="(visitor.visitor_id == state.visitor) ? 'selected-user' : ''"
+                                        @click="fetchMessages(visitor.visitor_id, visitor.name, visitor.email)">
                                         <div class="flex-shrink-0">
-                                            <img class="img-fluid"
-                                                v-bind:src="visitor.avatar"
-                                                alt="user img">
-                                            <span class="active"></span>
+                                            <img class="img-fluid" v-bind:src="visitor.avatar" alt="user img">
+                                            <!-- <span class="active"></span> -->
                                         </div>
                                         <div class="flex-grow-1 ms-3">
                                             <h3>{{ visitor.name }}</h3>
                                             <p>{{ visitor.email }}</p>
                                         </div>
-                                        <!-- <span class="badge text-bg-danger unread-badge" v-if="contact.unread_messages_count > 0">{{contact.unread_messages_count}}</span> -->
+                                        <span class="badge text-bg-danger unread-badge"
+                                            style="position: absolute;right: 3%;top: 25%;"
+                                            v-if="visitor.unread_messages_count > 0">0</span>
                                     </a>
                                 </template>
                             </div>
@@ -72,10 +76,13 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="d-flex justify-content-end">
-                                    <button type="button" @click="endChat()" class="btn btn-sm btn-danger" v-if="state.visitor != ''">End Chat</button>
+                                    <button type="button" @click="endChat()" class="btn btn-sm btn-danger"
+                                        v-if="state.visitor != ''">End Chat</button>
                                     <select class="form-control-sm ms-1" @change="changeStatus">
-                                        <option value="1" :selected="(operatorStatus == 1) ? true : false">Online</option>
-                                        <option value="0" :selected="(operatorStatus == 0) ? true : false">Offline</option>
+                                        <option value="1" :selected="(operatorStatus == 1) ? true : false">Online
+                                        </option>
+                                        <option value="0" :selected="(operatorStatus == 0) ? true : false">Offline
+                                        </option>
                                     </select>
                                 </div>
                             </div>
@@ -86,12 +93,27 @@
                             <ul class="">
                                 <template v-for="message in state.messages" :key="message.key">
                                     <li class="sender" v-if="message.sender == state.visitor">
-                                        <p><span class="">{{ message.visitor_name }} : </span> {{ message.content }} </p>
-                                        <span class="time">{{ new Date(message.timestamp).toLocaleString(undefined,{hour12: true,hour: 'numeric',minute: '2-digit',second: '2-digit',}) }} {{ (message.read == 1) ? 'read' : 'unread' }}</span>
+                                        <p><span class="">{{ message.visitor_name }} : </span> {{ message.content }}
+                                        </p>
+                                        <span class="time">{{ new
+                                                Date(message.timestamp).toLocaleString(undefined, {
+                                                    hour12: true, hour:
+                                                        'numeric', minute: '2-digit', second: '2-digit',
+                                                })
+                                        }} {{ (message.read == 1) ?
+        'read' : 'unread'
+}}</span>
                                     </li>
                                     <li class="repaly" v-else-if="message.sender == state.operator">
                                         <p><span class=""> You : </span> {{ message.content }} </p>
-                                        <span class="time">{{ new Date(message.timestamp).toLocaleString(undefined,{hour12: true,hour: 'numeric',minute: '2-digit',second: '2-digit',}) }} {{ (message.read == 1) ? 'read' : 'unread' }}</span>
+                                        <span class="time">{{ new
+                                                Date(message.timestamp).toLocaleString(undefined, {
+                                                    hour12: true, hour:
+                                                        'numeric', minute: '2-digit', second: '2-digit',
+                                                })
+                                        }} {{ (message.read == 1) ?
+        'read' : 'unread'
+}}</span>
                                     </li>
                                 </template>
                             </ul>
@@ -125,91 +147,111 @@ export default {
     props: ['user'],
     setup(props) {
         const inputUsername = ref("");
-		const inputMessage = ref("");
-		let hasScrolledToBottom = ref("")
-		let operatorStatus = ref(props.user.status);
-		let visitors = ref([]);
-		let state = reactive({
-			operator: props.user.operator_id,
-            visitor : '',
-            operator_name : props.user.name,
-            visitor_name : '',
-            visitor_email : '',
-			messages: []
-		});
+        const inputMessage = ref("");
+        let hasScrolledToBottom = ref("")
+        let operatorStatus = ref(props.user.status);
+        let visitors = ref([]);
+        let state = reactive({
+            operator: props.user.operator_id,
+            visitor: '',
+            operator_name: props.user.name,
+            visitor_name: '',
+            visitor_email: '',
+            messages: []
+        });
 
-		const Login = () => {
-			if (inputUsername.value != "" || inputUsername.value != null) {
-				state.operator = inputUsername.value;
-				inputUsername.value = "";
-			}
-		}
+        const Login = () => {
+            if (inputUsername.value != "" || inputUsername.value != null) {
+                state.operator = inputUsername.value;
+                inputUsername.value = "";
+            }
+        }
 
-		const Logout = () => {
-			state.operator = "";
-			state.visitor = "";
-		}
+        const Logout = () => {
+            state.operator = "";
+            state.visitor = "";
+        }
 
-		const SendMessage = () => {
-			const messagesRef = db.database().ref("messages");
+        const SendMessage = () => {
+            const messagesRef = db.database().ref("messages");
 
-			if (inputMessage.value === "" || inputMessage.value === null) {
-				return;
-			}
+            if (inputMessage.value === "" || inputMessage.value === null) {
+                return;
+            }
 
-			const message = {
+            const message = {
                 operator_name: state.operator_name,
-				visitor_name: state.visitor_name,
-				sender : state.operator,
-                receiver : state.visitor,
-				content: inputMessage.value,
-				read : 0,
-				timestamp : Date.now()
-			}
+                visitor_name: state.visitor_name,
+                sender: state.operator,
+                receiver: state.visitor,
+                content: inputMessage.value,
+                read: 0,
+                timestamp: Date.now()
+            }
 
-			messagesRef.push(message);
-			inputMessage.value = "";
-		}
+            messagesRef.push(message);
+            inputMessage.value = "";
+        }
 
-		const scrollBottom = () => {
-			if (state.messages.length > 1 && state.operator != '') {
+        const scrollBottom = () => {
+            if (state.messages.length > 1 && state.operator != '') {
                 state.messages.forEach(row => {
-                    if(row.read == 0 && row.sender == state.visitor){
-                        db.database().ref("messages/"+row.id).update({
-                            read : 1,
+                    if (row.read == 0 && row.sender == state.visitor) {
+                        db.database().ref("messages/" + row.id).update({
+                            read: 1,
                         });
                     }
                 });
-				let el = hasScrolledToBottom.value;
-				el.scrollTop = el.scrollHeight;
-			}
-		}
+                let el = hasScrolledToBottom.value;
+                el.scrollTop = el.scrollHeight;
+            }
+        }
 
-        const fetchMessages = (visitor,name,email) => {
+        const fetchMessages = (visitor, name, email) => {
             state.visitor = visitor;
             state.visitor_name = name;
             state.visitor_email = email;
             const messagesRef = db.database().ref("messages");
-			messagesRef.on('value', snapshot => {
-				const data = snapshot.val();
-				let messages = [];
-				Object.keys(data).forEach(key => {
-                    if((data[key].sender == state.visitor && data[key].receiver == state.operator) || (data[key].sender == state.operator && data[key].receiver == state.visitor)){
+            messagesRef.on('value', snapshot => {
+                const data = snapshot.val();
+                let messages = [];
+                let newMessages = [];
+                Object.keys(data).forEach(key => {
+                    if ((data[key].sender == state.visitor && data[key].receiver == state.operator) || (data[key].sender == state.operator && data[key].receiver == state.visitor)) {
                         messages.push({
                             id: key,
-							operator_name: data[key].operator_name,
-							visitor_name: data[key].visitor_name,
-							sender : data[key].sender,
-							receiver : data[key].receiver,
-							content: data[key].content,
-							read : data[key].read,
-							timestamp : data[key].timestamp
+                            operator_name: data[key].operator_name,
+                            visitor_name: data[key].visitor_name,
+                            sender: data[key].sender,
+                            receiver: data[key].receiver,
+                            content: data[key].content,
+                            read: data[key].read,
+                            timestamp: data[key].timestamp
                         });
                     }
-				});
-				state.messages = messages;
+                    if (data[key].sender != state.visitor && data[key].receiver == state.operator && data[key].read == 0) {
+                        let sub = newMessages.findIndex(x => x.sender == data[key].sender);
+                        if (newMessages.length == 0 ||  sub == -1) {
+                            newMessages.push({
+                                id: key,
+                                sender: data[key].sender,
+                                message_count: 1,
+                            });
+                        } else {
+                            newMessages[sub].message_count++;
+                        }
+                    }
+                });
+                newMessages.forEach(element => {
+                    let sub = visitors.value.findIndex(x => x.visitor_id == element.sender);
+                    if (sub == -1) {
+                        fetchUsers();
+                    }
+                });
+                
+                state.messages = messages;
                 document.querySelector('#chatBox').classList.remove('d-none');
-			});
+            });
         }
 
         const fetchUsers = async () => {
@@ -218,8 +260,8 @@ export default {
             });
         }
         const changeStatus = (event) => {
-            axios.get('/chat/operator/status/'+state.operator+'/'+event.target.value).then(response => {
-                if(response.data.status == 'success'){
+            axios.get('/chat/operator/status/' + state.operator + '/' + event.target.value).then(response => {
+                if (response.data.status == 'success') {
                     operatorStatus.value = event.target.value;
                 }
             });
@@ -227,40 +269,40 @@ export default {
 
         const endChat = () => {
             let end = {
-                operator_id : state.operator,
-                visitor_id : state.visitor,
-                messages : state.messages,
+                operator_id: state.operator,
+                visitor_id: state.visitor,
+                messages: state.messages,
             }
             axios.post('/visitor/chat-end', end).then(response => {
-                if(response.data.status == 'success'){
+                if (response.data.status == 'success') {
                     state.messages.forEach(row => {
-                        db.database().ref("messages/"+row.id).remove();
+                        db.database().ref("messages/" + row.id).remove();
                     });
                 }
             });
         }
 
-		onMounted(() => {
+        onMounted(() => {
             fetchUsers();
-		});
-		onUpdated(() => {
-			scrollBottom();
-		})
-		return {
-			inputUsername,
+        });
+        onUpdated(() => {
+            scrollBottom();
+        })
+        return {
+            inputUsername,
             visitors,
-			Login,
-			state,
+            Login,
+            state,
             operatorStatus,
-			inputMessage,
-			SendMessage,
+            inputMessage,
+            SendMessage,
             fetchMessages,
             changeStatus,
             endChat,
-			Logout,
-			scrollBottom,
-			hasScrolledToBottom
-		}
+            Logout,
+            scrollBottom,
+            hasScrolledToBottom
+        }
     }
 }
 </script>
