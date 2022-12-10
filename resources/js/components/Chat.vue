@@ -48,9 +48,8 @@
                                             <h3>{{ visitor.name }}</h3>
                                             <p>{{ visitor.email }}</p>
                                         </div>
-                                        <span class="badge text-bg-danger unread-badge"
-                                            style="position: absolute;right: 3%;top: 25%;"
-                                            v-if="visitor.unread_messages_count > 0">0</span>
+                                        <span class="badge text-bg-danger unread-badge" style="position: absolute;right: 3%;top: 25%;"
+                                            v-if="visitor.messages_count > 0">{{ visitor.messages_count }}</span>
                                     </a>
                                 </template>
                             </div>
@@ -79,10 +78,8 @@
                                     <button type="button" @click="endChat()" class="btn btn-sm btn-danger"
                                         v-if="state.visitor != ''">End Chat</button>
                                     <select class="form-control-sm ms-1" @change="changeStatus">
-                                        <option value="1" :selected="(operatorStatus == 1) ? true : false">Online
-                                        </option>
-                                        <option value="0" :selected="(operatorStatus == 0) ? true : false">Offline
-                                        </option>
+                                        <option value="1" :selected="(operatorStatus == 1) ? true : false">Online </option>
+                                        <option value="0" :selected="(operatorStatus == 0) ? true : false">Offline </option>
                                     </select>
                                 </div>
                             </div>
@@ -93,27 +90,12 @@
                             <ul class="">
                                 <template v-for="message in state.messages" :key="message.key">
                                     <li class="sender" v-if="message.sender == state.visitor">
-                                        <p><span class="">{{ message.visitor_name }} : </span> {{ message.content }}
-                                        </p>
-                                        <span class="time">{{ new
-                                                Date(message.timestamp).toLocaleString(undefined, {
-                                                    hour12: true, hour:
-                                                        'numeric', minute: '2-digit', second: '2-digit',
-                                                })
-                                        }} {{ (message.read == 1) ?
-        'read' : 'unread'
-}}</span>
+                                        <p><span class="">{{ message.visitor_name }} : </span> {{ message.content }} </p>
+                                        <span class="time">{{ new Date(message.timestamp).toLocaleString(undefined, { hour12: true, hour: 'numeric', minute: '2-digit', second: '2-digit',}) }} {{ (message.read == 1) ? 'read' : 'unread' }}</span>
                                     </li>
                                     <li class="repaly" v-else-if="message.sender == state.operator">
                                         <p><span class=""> You : </span> {{ message.content }} </p>
-                                        <span class="time">{{ new
-                                                Date(message.timestamp).toLocaleString(undefined, {
-                                                    hour12: true, hour:
-                                                        'numeric', minute: '2-digit', second: '2-digit',
-                                                })
-                                        }} {{ (message.read == 1) ?
-        'read' : 'unread'
-}}</span>
+                                        <span class="time">{{ new Date(message.timestamp).toLocaleString(undefined, { hour12: true, hour: 'numeric', minute: '2-digit', second: '2-digit', }) }} {{ (message.read == 1) ? 'read' : 'unread' }}</span>
                                     </li>
                                 </template>
                             </ul>
@@ -146,6 +128,9 @@ import "bootstrap/dist/js/bootstrap.min.js";
 export default {
     props: ['user'],
     setup(props) {
+        const sendMessageSound = new Audio("./sounds/message-send-notification.mp3");
+        const newMessageSound = new Audio("./sounds/unread-message-notification.wav");
+
         const inputUsername = ref("");
         const inputMessage = ref("");
         let hasScrolledToBottom = ref("")
@@ -190,6 +175,8 @@ export default {
             }
 
             messagesRef.push(message);
+            sendMessageSound.play();
+            sendMessageSound.currentTime = 0;
             inputMessage.value = "";
         }
 
@@ -228,8 +215,7 @@ export default {
                             read: data[key].read,
                             timestamp: data[key].timestamp
                         });
-                    }
-                    if (data[key].sender != state.visitor && data[key].receiver == state.operator && data[key].read == 0) {
+                    }else if (data[key].sender != state.visitor && data[key].sender != state.operator && data[key].receiver == state.operator && data[key].read == 0) {
                         let sub = newMessages.findIndex(x => x.sender == data[key].sender);
                         if (newMessages.length == 0 ||  sub == -1) {
                             newMessages.push({
@@ -241,6 +227,12 @@ export default {
                             newMessages[sub].message_count++;
                         }
                     }
+
+                    if(data[key].sender != state.visitor && data[key].sender != state.operator && data[key].receiver == state.operator && data[key].read == 0){
+                        console.log(data[key]);
+                        newMessageSound.play();
+                        newMessageSound.currentTime = 0;
+                    }
                 });
                 newMessages.forEach(element => {
                     let sub = visitors.value.findIndex(x => x.visitor_id == element.sender);
@@ -248,7 +240,16 @@ export default {
                         fetchUsers();
                     }
                 });
-                
+                let finded = undefined;
+                visitors.value.forEach((visitor,key) => {
+                    finded = newMessages.findIndex(x => x.sender == visitor.visitor_id);
+                    if(finded !== -1){
+                        visitors.value[key].messages_count =  newMessages[finded].message_count;
+                    }else{
+                        visitors.value[key].messages_count =  0;
+                    }
+                });
+
                 state.messages = messages;
                 document.querySelector('#chatBox').classList.remove('d-none');
             });
@@ -288,6 +289,7 @@ export default {
         onUpdated(() => {
             scrollBottom();
         })
+        
         return {
             inputUsername,
             visitors,

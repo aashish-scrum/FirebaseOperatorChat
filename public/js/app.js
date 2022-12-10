@@ -41686,6 +41686,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   props: ['user'],
   setup: function setup(props) {
+    var sendMessageSound = new Audio("./sounds/message-send-notification.mp3");
+    var newMessageSound = new Audio("./sounds/unread-message-notification.wav");
     var inputUsername = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)("");
     var inputMessage = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)("");
     var hasScrolledToBottom = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)("");
@@ -41724,6 +41726,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         timestamp: Date.now()
       };
       messagesRef.push(message);
+      sendMessageSound.play();
+      sendMessageSound.currentTime = 0;
       inputMessage.value = "";
     };
     var scrollBottom = function scrollBottom() {
@@ -41760,8 +41764,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               read: data[key].read,
               timestamp: data[key].timestamp
             });
-          }
-          if (data[key].sender != state.visitor && data[key].receiver == state.operator && data[key].read == 0) {
+          } else if (data[key].sender != state.visitor && data[key].sender != state.operator && data[key].receiver == state.operator && data[key].read == 0) {
             var sub = newMessages.findIndex(function (x) {
               return x.sender == data[key].sender;
             });
@@ -41775,6 +41778,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               newMessages[sub].message_count++;
             }
           }
+          if (data[key].sender != state.visitor && data[key].sender != state.operator && data[key].receiver == state.operator && data[key].read == 0) {
+            console.log(data[key]);
+            newMessageSound.play();
+            newMessageSound.currentTime = 0;
+          }
         });
         newMessages.forEach(function (element) {
           var sub = visitors.value.findIndex(function (x) {
@@ -41782,6 +41790,17 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           });
           if (sub == -1) {
             fetchUsers();
+          }
+        });
+        var finded = undefined;
+        visitors.value.forEach(function (visitor, key) {
+          finded = newMessages.findIndex(function (x) {
+            return x.sender == visitor.visitor_id;
+          });
+          if (finded !== -1) {
+            visitors.value[key].messages_count = newMessages[finded].message_count;
+          } else {
+            visitors.value[key].messages_count = 0;
           }
         });
         state.messages = messages;
@@ -41993,7 +42012,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       "class": "img-fluid",
       src: visitor.avatar,
       alt: "user img"
-    }, null, 8 /* PROPS */, _hoisted_11), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <span class=\"active\"></span> ")]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_12, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h3", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(visitor.name), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(visitor.email), 1 /* TEXT */)]), visitor.unread_messages_count > 0 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_13, "0")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)], 10 /* CLASS, PROPS */, _hoisted_9);
+    }, null, 8 /* PROPS */, _hoisted_11), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <span class=\"active\"></span> ")]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_12, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h3", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(visitor.name), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(visitor.email), 1 /* TEXT */)]), visitor.messages_count > 0 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_13, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(visitor.messages_count), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)], 10 /* CLASS, PROPS */, _hoisted_9);
   }), 256 /* UNKEYED_FRAGMENT */))])])])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" chatbox "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_14, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_15, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_16, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_17, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_18, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_19, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_20, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_21, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h3", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($setup.state.visitor_name), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($setup.state.visitor_email), 1 /* TEXT */)])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_22, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_23, [$setup.state.visitor != '' ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("button", {
     key: 0,
     type: "button",
