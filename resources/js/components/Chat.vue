@@ -76,11 +76,14 @@
                             <div class="col-md-4">
                                 <div class="d-flex justify-content-end">
                                     <button type="button" @click="endChat()" class="btn btn-sm btn-danger"
-                                        v-if="state.visitor != ''">End Chat</button>
+                                        v-if="state.visitor != '' && state.messages.length > 0">End Chat</button>
+                                    <div class="position-relative">
                                     <select class="form-control-sm ms-1" @change="changeStatus">
                                         <option value="1" :selected="(operatorStatus == 1) ? true : false">Online </option>
                                         <option value="0" :selected="(operatorStatus == 0) ? true : false">Offline </option>
                                     </select>
+                                        <span class="badge rounded-pill text-bg-primary position-absolute" style="top:-10px;right:-10px">{{ assignedVisitors }}</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -135,6 +138,7 @@ export default {
         const inputMessage = ref("");
         let hasScrolledToBottom = ref("")
         let operatorStatus = ref(props.user.status);
+        let assignedVisitors = ref(props.user.assigned_visitors);
         let visitors = ref([]);
         let state = reactive({
             operator: props.user.operator_id,
@@ -229,7 +233,6 @@ export default {
                     }
 
                     if(data[key].sender != state.visitor && data[key].sender != state.operator && data[key].receiver == state.operator && data[key].read == 0){
-                        console.log(data[key]);
                         newMessageSound.play();
                         newMessageSound.currentTime = 0;
                     }
@@ -279,6 +282,7 @@ export default {
                     state.messages.forEach(row => {
                         db.database().ref("messages/" + row.id).remove();
                     });
+                    assignedVisitors.value--;
                 }
             });
         }
@@ -293,6 +297,7 @@ export default {
         return {
             inputUsername,
             visitors,
+            assignedVisitors,
             Login,
             state,
             operatorStatus,
