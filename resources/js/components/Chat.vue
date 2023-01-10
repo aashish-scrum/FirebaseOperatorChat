@@ -93,11 +93,11 @@
                             <ul class="">
                                 <template v-for="message in state.messages" :key="message.key">
                                     <li class="sender" v-if="message.sender == state.visitor">
-                                        <p><span class="">{{ message.visitor_name }} : </span> {{ message.content }} </p>
+                                        <p> {{ message.content }} </p>
                                         <span class="time">{{ new Date(message.timestamp).toLocaleString(undefined, { hour12: true, hour: 'numeric', minute: '2-digit', second: '2-digit',}) }} {{ (message.read == 1) ? 'read' : 'unread' }}</span>
                                     </li>
                                     <li class="repaly" v-else-if="message.sender == state.operator">
-                                        <p><span class=""> You : </span> {{ message.content }} </p>
+                                        <p> {{ message.content }} </p>
                                         <span class="time">{{ new Date(message.timestamp).toLocaleString(undefined, { hour12: true, hour: 'numeric', minute: '2-digit', second: '2-digit', }) }} {{ (message.read == 1) ? 'read' : 'unread' }}</span>
                                     </li>
                                 </template>
