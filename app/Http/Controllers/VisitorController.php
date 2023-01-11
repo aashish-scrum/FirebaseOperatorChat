@@ -12,37 +12,19 @@ class VisitorController extends Controller
 {
     public function visitor_register(Request $request)
     {
-        $newArray = [
-            'operator' => null,
-            'visitor' => '',
-        ];
-        // ->orWhere('ip',$request->ip())
-        $visitor = Visitor::where('email',$request->email)->latest()->first();
-        if($visitor == ''){
-            $visitor = Visitor::create([
-                'visitor_id' => str_replace(' ','_',strtolower($request->username)).rand(10000,99999).now()->timestamp,
-                'ip' => $request->ip(),
-                'name' => $request->username,
-                'email' => $request->email,
-                'phone' => $request->phone,
-                'status' => 1,
-            ]);
-        }
-        $operator = User::where('status',1)->orderBy('assigned_visitors')->first();
+        return $request->ip();
+        // dd($request->all());
+
+        $visitor = Visitor::create([
+            'visitor_id' => 'V'.rand(100000000000000,999999999999999),
+            'ip' => $request->ip(),
+            'status' => 1,
+        ]);
+
+        // $operator = User::where('status',1)->orderBy('assigned_visitors')->first();
         
         $newArray['visitor'] = $visitor->visitor_id;
-        $newArray['visitor_name'] = $visitor->name;
 
-        if ($operator != '') {
-            $newArray['operator'] = $operator->operator_id;
-            $newArray['operator_name'] = $operator->name;
-            $operator->assigned_visitors ++;
-            $operator->save();
-            $message = new Message();
-            $message->operator_id = $operator->id;
-            $message->visitor_id = $visitor->id;
-            $message->save();
-        }
         return response()->json($newArray,200);
     }
 

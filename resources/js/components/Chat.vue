@@ -19,21 +19,17 @@
 }
 </style>
 <template>
-    <div class="chat-area">
+    <div class="chat-area border">
         <!-- chatlist -->
         <div class="chatlist p-0">
             <div class="modal-dialog-scrollable">
                 <div class="modal-content">
-                    <div class="chat-header p-3">
-                        <div class="msg-search">
-                            <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="Search"
-                                aria-label="search">
-                            <a class="add" href="#"><img class="img-fluid"
-                                    src="https://mehedihtml.com/chatbox/assets/img/add.svg" alt="add"></a>
-                        </div>
+                    <div class="chat-header p-3 border-bottom bg-opacity-50 bg-danger text-center" v-if="state.pendingVisits.length > 0">
+                        <p class="text-white fw-bold mb-2" style="font-size: 12px;"> {{ state.pendingVisits.length }} Pending Chat request</p>
+                        <button type="button" class="btn btn-danger btn-sm" @click="">Open</button>
                     </div>
 
-                    <div class="modal-body mt-1 border-top">
+                    <div class="modal-body mt-1">
                         <div class="chat-lists">
                             <div class="chat-list">
                                 <template v-for="visitor in visitors">
@@ -75,22 +71,26 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="d-flex justify-content-end">
-                                    <button type="button" @click="endChat()" class="btn btn-sm btn-danger"
-                                        v-if="state.visitor != '' && state.messages.length > 0">End Chat</button>
-                                    <div class="position-relative">
-                                    <select class="form-control-sm ms-1" @change="changeStatus">
-                                        <option value="1" :selected="(operatorStatus == 1) ? true : false">Online </option>
-                                        <option value="0" :selected="(operatorStatus == 0) ? true : false">Offline </option>
-                                    </select>
-                                        <span class="badge rounded-pill text-bg-primary position-absolute" style="top:-10px;right:-10px">{{ assignedVisitors }}</span>
-                                    </div>
+                                    
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="scrollable modal-body" ref="hasScrolledToBottom">
-                        <div class="msg-body">
-                            <ul class="">
+                        <div class="msg-body p-3">
+                            <table class="table table-responsive caption-top table-striped border">
+                                <caption>List of users</caption>
+                                <tbody>
+                                    <template v-for="pending in state.pendingVisits" :key="pending.key">
+                                        <tr>
+                                            <td>{{pending.visitor_id}}</td>
+                                            <td>{{pending.message}}</td>
+                                            <td>{{pending.timestamp}}</td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                            <!-- <ul class="">
                                 <template v-for="message in state.messages" :key="message.key">
                                     <li class="sender" v-if="message.sender == state.visitor">
                                         <p> {{ message.content }} </p>
@@ -101,7 +101,7 @@
                                         <span class="time">{{ new Date(message.timestamp).toLocaleString(undefined, { hour12: true, hour: 'numeric', minute: '2-digit', second: '2-digit', }) }} {{ (message.read == 1) ? 'read' : 'unread' }}</span>
                                     </li>
                                 </template>
-                            </ul>
+                            </ul> -->
                         </div>
                     </div>
 
@@ -145,7 +145,7 @@ export default {
             visitor: '',
             operator_name: props.user.name,
             visitor_name: '',
-            visitor_email: '',
+            pendingVisits : [],
             messages: []
         });
 
@@ -159,6 +159,19 @@ export default {
         const Logout = () => {
             state.operator = "";
             state.visitor = "";
+        }
+
+        const requestVisitor = () => {
+            db.collection("visitors")
+            .onSnapshot((querySnapshot) => {
+                let visits = [];
+                querySnapshot.forEach((doc) => {
+                    visits.push(doc.data());
+                    // console.log(doc.id + '=>' , doc.data().visitor_id);
+                });
+                state.pendingVisits = visits;
+                console.log(state.pendingVisits);
+            });
         }
 
         const SendMessage = () => {
@@ -259,9 +272,7 @@ export default {
         }
 
         const fetchUsers = async () => {
-            axios.get('/chat/visitors').then(response => {
-                visitors.value = response.data;
-            });
+            
         }
         const changeStatus = (event) => {
             axios.get('/chat/operator/status/' + state.operator + '/' + event.target.value).then(response => {
@@ -288,14 +299,17 @@ export default {
         }
 
         onMounted(() => {
-            fetchUsers();
+            // fetchUsers();
+            requestVisitor();
         });
+
         onUpdated(() => {
             scrollBottom();
         })
         
         return {
             inputUsername,
+            requestVisitor,
             visitors,
             assignedVisitors,
             Login,

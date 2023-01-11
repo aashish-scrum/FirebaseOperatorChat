@@ -16,11 +16,13 @@ class CreateVisitorsTable extends Migration
         Schema::create('visitors', function (Blueprint $table) {
             $table->id();
             $table->string('visitor_id');
+            $table->string('operator_id')->nullable();
             $table->string('ip');
-            $table->string('name');
-            $table->string('email');
+            $table->string('name')->nullable();
+            $table->string('email')->nullable();
             $table->string('phone')->nullable();
             $table->boolean('status')->default(0);
+            $table->json('messages')->nullable();
             $table->timestamps();
         });
     }

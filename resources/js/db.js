@@ -1,9 +1,10 @@
 import firebase from "firebase/app";
-import "firebase/database";
+import "firebase/firestore";
 
 const firebaseConfig = {
 	apiKey: "AIzaSyCtkXEAp8pgNmcqO9tHoDUZfJUJfn0wQlw",
 	authDomain: "chatbot-7eb8f.firebaseapp.com",
+	databaseURL: "https://chatbot-7eb8f-default-rtdb.firebaseio.com",
 	projectId: "chatbot-7eb8f",
 	storageBucket: "chatbot-7eb8f.appspot.com",
 	messagingSenderId: "695825043932",
@@ -12,5 +13,6 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const db = firebase.initializeApp(firebaseConfig);
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 export default db;
