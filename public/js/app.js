@@ -46579,13 +46579,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     };
     var scrollBottom = function scrollBottom() {
       if (state.messages.length > 1 && state.operator != '') {
-        state.messages.forEach(function (row) {
-          if (row.read == 0 && row.sender == state.visitor) {
-            _db__WEBPACK_IMPORTED_MODULE_1__["default"].database().ref("messages/" + row.id).update({
-              read: 1
-            });
-          }
-        });
+        // state.messages.forEach(row => {
+        //     if (row.read == 0 && row.sender == state.visitor) {
+        //         db.database().ref("messages/" + row.id).update({
+        //             read: 1,
+        //         });
+        //     }
+        // });
         var el = hasScrolledToBottom.value;
         el.scrollTop = el.scrollHeight;
       }
@@ -46639,23 +46639,28 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         return _ref.apply(this, arguments);
       };
     }();
+    var saveChat = function saveChat(element) {
+      _db__WEBPACK_IMPORTED_MODULE_1__["default"].collection('chat_room').doc(element.chat_room_id).collection('messages').orderBy("timestamp").get().then(function (querySnapshot) {
+        var messages = [];
+        querySnapshot.forEach(function (doc) {
+          messages.push(doc.data());
+          _db__WEBPACK_IMPORTED_MODULE_1__["default"].collection('chat_room').doc(element.chat_room_id).collection('messages').doc(doc.id)["delete"]();
+        });
+        var data = {
+          visitor_id: element.visitor_id,
+          operator_id: element.operator_id,
+          messages: messages
+        };
+        axios.post('/visitor/chat-end', data);
+        _db__WEBPACK_IMPORTED_MODULE_1__["default"].collection('chat_room').doc(element.chat_room_id)["delete"]();
+        _db__WEBPACK_IMPORTED_MODULE_1__["default"].collection('visitors').doc(element.visitor_id)["delete"]();
+        state.currentVisitor = '';
+        document.querySelector('#chatBox').classList.add('d-none');
+      });
+    };
     var endChat = function endChat() {
       state.endVisits.forEach(function (element) {
-        _db__WEBPACK_IMPORTED_MODULE_1__["default"].collection('chat_room').doc(element.chat_room_id).collection('messages').orderBy("timestamp").get().then(function (querySnapshot) {
-          var messages = [];
-          querySnapshot.forEach(function (doc) {
-            messages.push(doc.data());
-            _db__WEBPACK_IMPORTED_MODULE_1__["default"].collection('chat_room').doc(element.chat_room_id).collection('messages').doc(doc.id)["delete"]();
-          });
-          var data = {
-            visitor_id: element.visitor_id,
-            operator_id: element.operator_id,
-            messages: messages
-          };
-          axios.post('/visitor/chat-end', data);
-          _db__WEBPACK_IMPORTED_MODULE_1__["default"].collection('chat_room').doc(element.chat_room_id)["delete"]();
-          _db__WEBPACK_IMPORTED_MODULE_1__["default"].collection('visitors').doc(element.visitor_id)["delete"]();
-        });
+        saveChat(element);
       });
     };
     (0,vue__WEBPACK_IMPORTED_MODULE_0__.onMounted)(function () {
@@ -46668,6 +46673,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       inputUsername: inputUsername,
       joinChat: joinChat,
       operator: operator,
+      saveChat: saveChat,
       Login: Login,
       state: state,
       inputMessage: inputMessage,
@@ -46825,7 +46831,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     type: "button",
     "class": "btn btn-primary",
     onClick: _cache[1] || (_cache[1] = function ($event) {
-      return $setup.endChat();
+      return $setup.saveChat($setup.state.currentVisitor);
     }),
     style: {
       "--bs-btn-padding-y": ".25rem",

@@ -80,7 +80,7 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="d-flex justify-content-end">
-                                    <button type="button" class="btn btn-primary" @click="endChat()" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">End Chat</button>
+                                    <button type="button" class="btn btn-primary" @click="saveChat(state.currentVisitor)" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">End Chat</button>
                                 </div>
                             </div>
                         </div>
@@ -221,13 +221,13 @@ export default {
 
         const scrollBottom = () => {
             if (state.messages.length > 1 && state.operator != '') {
-                state.messages.forEach(row => {
-                    if (row.read == 0 && row.sender == state.visitor) {
-                        db.database().ref("messages/" + row.id).update({
-                            read: 1,
-                        });
-                    }
-                });
+                // state.messages.forEach(row => {
+                //     if (row.read == 0 && row.sender == state.visitor) {
+                //         db.database().ref("messages/" + row.id).update({
+                //             read: 1,
+                //         });
+                //     }
+                // });
                 let el = hasScrolledToBottom.value;
                 el.scrollTop = el.scrollHeight;
             }
@@ -273,9 +273,8 @@ export default {
             });
         }
 
-        const endChat = () => {
-            state.endVisits.forEach(element => {
-                db.collection('chat_room').doc(element.chat_room_id)
+        const saveChat = (element) => {
+            db.collection('chat_room').doc(element.chat_room_id)
                 .collection('messages').orderBy("timestamp").get().then((querySnapshot) => {
                     let messages = [];
                     querySnapshot.forEach((doc) => {
@@ -291,7 +290,14 @@ export default {
                     axios.post('/visitor/chat-end', data);
                     db.collection('chat_room').doc(element.chat_room_id).delete();
                     db.collection('visitors').doc(element.visitor_id).delete();
+                    state.currentVisitor = '';
+                    document.querySelector('#chatBox').classList.add('d-none');
                 });
+        }
+
+        const endChat = () => {
+            state.endVisits.forEach(element => {
+                saveChat(element);
             });
         }
 
@@ -307,6 +313,7 @@ export default {
             inputUsername,
             joinChat,
             operator,
+            saveChat,
             Login,
             state,
             inputMessage,
