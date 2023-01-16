@@ -46514,15 +46514,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     var inputUsername = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)("");
     var inputMessage = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)("");
     var hasScrolledToBottom = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)("");
-    var operatorStatus = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(props.user.status);
-    var assignedVisitors = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(props.user.assigned_visitors);
-    var visitors = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)([]);
+    var operator = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(props.user);
     var state = (0,vue__WEBPACK_IMPORTED_MODULE_0__.reactive)({
-      operator: props.user.operator_id,
-      visitor: '',
-      operator_name: props.user.name,
-      visitor_name: '',
+      currentVisitor: '',
       pendingVisits: [],
+      activeVisits: [],
+      endVisits: [],
       messages: []
     });
     var Login = function Login() {
@@ -46535,33 +46532,47 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       state.operator = "";
       state.visitor = "";
     };
-    var requestVisitor = function requestVisitor() {
-      _db__WEBPACK_IMPORTED_MODULE_1__["default"].collection("visitors").onSnapshot(function (querySnapshot) {
-        var visits = [];
-        querySnapshot.forEach(function (doc) {
-          visits.push(doc.data());
-          // console.log(doc.id + '=>' , doc.data().visitor_id);
+    var joinChat = function joinChat(visitor) {
+      var chatRoom = {
+          operator: operator.value.operator_id,
+          visitor: visitor.visitor_id
+        },
+        message = {
+          sender: visitor.visitor_id,
+          receiver: operator.value.operator_id,
+          message: visitor.message,
+          read: 1,
+          timestamp: visitor.timestamp
+        };
+      console.log(chatRoom);
+      visitor.receiver = operator.value.operator_id;
+      _db__WEBPACK_IMPORTED_MODULE_1__["default"].collection("chat_room").add(chatRoom).then(function (docRef) {
+        _db__WEBPACK_IMPORTED_MODULE_1__["default"].collection("chat_room").doc(docRef.id).collection('messages').add(message).then(function () {
+          var dataChanging = {
+            visitor_id: visitor.visitor_id,
+            operator_id: operator.value.operator_id,
+            chat_room_id: docRef.id,
+            type: 'active'
+          };
+          _db__WEBPACK_IMPORTED_MODULE_1__["default"].collection("visitors").doc(visitor.visitor_id).set(dataChanging).then(function () {
+            fetchMessages(dataChanging);
+          });
         });
-
-        state.pendingVisits = visits;
-        console.log(state.pendingVisits);
       });
     };
     var SendMessage = function SendMessage() {
-      var messagesRef = _db__WEBPACK_IMPORTED_MODULE_1__["default"].database().ref("messages");
+      var messagesRef = _db__WEBPACK_IMPORTED_MODULE_1__["default"].collection('chat_room').doc(state.currentVisitor.chat_room_id).collection('messages');
       if (inputMessage.value === "" || inputMessage.value === null) {
         return;
       }
       var message = {
-        operator_name: state.operator_name,
-        visitor_name: state.visitor_name,
-        sender: state.operator,
-        receiver: state.visitor,
-        content: inputMessage.value,
-        read: 0,
+        sender: operator.value.operator_id,
+        receiver: state.currentVisitor.visitor_id,
+        message: inputMessage.value,
+        read: 1,
         timestamp: Date.now()
       };
-      messagesRef.push(message);
+      messagesRef.add(message);
       sendMessageSound.play();
       sendMessageSound.currentTime = 0;
       inputMessage.value = "";
@@ -46579,68 +46590,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         el.scrollTop = el.scrollHeight;
       }
     };
-    var fetchMessages = function fetchMessages(visitor, name, email) {
-      state.visitor = visitor;
-      state.visitor_name = name;
-      state.visitor_email = email;
-      var messagesRef = _db__WEBPACK_IMPORTED_MODULE_1__["default"].database().ref("messages");
-      messagesRef.on('value', function (snapshot) {
-        var data = snapshot.val();
+    var fetchMessages = function fetchMessages(visitor) {
+      state.currentVisitor = visitor;
+      _db__WEBPACK_IMPORTED_MODULE_1__["default"].collection('chat_room').doc(visitor.chat_room_id).collection('messages').orderBy("timestamp").onSnapshot(function (querySnapshot) {
         var messages = [];
-        var newMessages = [];
-        Object.keys(data).forEach(function (key) {
-          if (data[key].sender == state.visitor && data[key].receiver == state.operator || data[key].sender == state.operator && data[key].receiver == state.visitor) {
-            messages.push({
-              id: key,
-              operator_name: data[key].operator_name,
-              visitor_name: data[key].visitor_name,
-              sender: data[key].sender,
-              receiver: data[key].receiver,
-              content: data[key].content,
-              read: data[key].read,
-              timestamp: data[key].timestamp
-            });
-          } else if (data[key].sender != state.visitor && data[key].sender != state.operator && data[key].receiver == state.operator && data[key].read == 0) {
-            var sub = newMessages.findIndex(function (x) {
-              return x.sender == data[key].sender;
-            });
-            if (newMessages.length == 0 || sub == -1) {
-              newMessages.push({
-                id: key,
-                sender: data[key].sender,
-                message_count: 1
-              });
-            } else {
-              newMessages[sub].message_count++;
-            }
-          }
-          if (data[key].sender != state.visitor && data[key].sender != state.operator && data[key].receiver == state.operator && data[key].read == 0) {
-            newMessageSound.play();
-            newMessageSound.currentTime = 0;
-          }
-        });
-        newMessages.forEach(function (element) {
-          var sub = visitors.value.findIndex(function (x) {
-            return x.visitor_id == element.sender;
-          });
-          if (sub == -1) {
-            fetchUsers();
-          }
-        });
-        var finded = undefined;
-        visitors.value.forEach(function (visitor, key) {
-          finded = newMessages.findIndex(function (x) {
-            return x.sender == visitor.visitor_id;
-          });
-          if (finded !== -1) {
-            visitors.value[key].messages_count = newMessages[finded].message_count;
-          } else {
-            visitors.value[key].messages_count = 0;
-          }
+        querySnapshot.forEach(function (doc) {
+          messages.push(doc.data());
         });
         state.messages = messages;
-        document.querySelector('#chatBox').classList.remove('d-none');
       });
+      document.querySelector('#chatBox').classList.remove('d-none');
     };
     var fetchUsers = /*#__PURE__*/function () {
       var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
@@ -46648,6 +46607,28 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
+                _db__WEBPACK_IMPORTED_MODULE_1__["default"].collection("visitors").onSnapshot(function (querySnapshot) {
+                  var pendingVisits = [];
+                  var activeVisits = [];
+                  var endVisits = [];
+                  var docData;
+                  querySnapshot.forEach(function (doc) {
+                    docData = doc.data();
+                    docData.doc_id = doc.id;
+                    if (docData.type == 'pending') pendingVisits.push(docData);
+                    if (docData.type == 'active' && docData.operator_id == operator.value.operator_id) activeVisits.push(docData);
+                    if (docData.type == 'closed' && docData.operator_id == operator.value.operator_id) endVisits.push(docData);
+                    // console.log(doc.id + '=>' , doc.data());
+                  });
+
+                  state.pendingVisits = pendingVisits;
+                  state.activeVisits = activeVisits;
+                  state.endVisits = endVisits;
+                  if (state.endVisits.length > 0) {
+                    endChat();
+                  }
+                });
+              case 1:
               case "end":
                 return _context.stop();
             }
@@ -46658,47 +46639,40 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         return _ref.apply(this, arguments);
       };
     }();
-    var changeStatus = function changeStatus(event) {
-      axios.get('/chat/operator/status/' + state.operator + '/' + event.target.value).then(function (response) {
-        if (response.data.status == 'success') {
-          operatorStatus.value = event.target.value;
-        }
-      });
-    };
     var endChat = function endChat() {
-      var end = {
-        operator_id: state.operator,
-        visitor_id: state.visitor,
-        messages: state.messages
-      };
-      axios.post('/visitor/chat-end', end).then(function (response) {
-        if (response.data.status == 'success') {
-          state.messages.forEach(function (row) {
-            _db__WEBPACK_IMPORTED_MODULE_1__["default"].database().ref("messages/" + row.id).remove();
+      state.endVisits.forEach(function (element) {
+        _db__WEBPACK_IMPORTED_MODULE_1__["default"].collection('chat_room').doc(element.chat_room_id).collection('messages').orderBy("timestamp").get().then(function (querySnapshot) {
+          var messages = [];
+          querySnapshot.forEach(function (doc) {
+            messages.push(doc.data());
+            _db__WEBPACK_IMPORTED_MODULE_1__["default"].collection('chat_room').doc(element.chat_room_id).collection('messages').doc(doc.id)["delete"]();
           });
-          assignedVisitors.value--;
-        }
+          var data = {
+            visitor_id: element.visitor_id,
+            operator_id: element.operator_id,
+            messages: messages
+          };
+          axios.post('/visitor/chat-end', data);
+          _db__WEBPACK_IMPORTED_MODULE_1__["default"].collection('chat_room').doc(element.chat_room_id)["delete"]();
+          _db__WEBPACK_IMPORTED_MODULE_1__["default"].collection('visitors').doc(element.visitor_id)["delete"]();
+        });
       });
     };
     (0,vue__WEBPACK_IMPORTED_MODULE_0__.onMounted)(function () {
-      // fetchUsers();
-      requestVisitor();
+      fetchUsers();
     });
     (0,vue__WEBPACK_IMPORTED_MODULE_0__.onUpdated)(function () {
       scrollBottom();
     });
     return {
       inputUsername: inputUsername,
-      requestVisitor: requestVisitor,
-      visitors: visitors,
-      assignedVisitors: assignedVisitors,
+      joinChat: joinChat,
+      operator: operator,
       Login: Login,
       state: state,
-      operatorStatus: operatorStatus,
       inputMessage: inputMessage,
       SendMessage: SendMessage,
       fetchMessages: fetchMessages,
-      changeStatus: changeStatus,
       endChat: endChat,
       Logout: Logout,
       scrollBottom: scrollBottom,
@@ -46754,67 +46728,79 @@ var _hoisted_9 = {
   "class": "chat-list"
 };
 var _hoisted_10 = ["onClick"];
-var _hoisted_11 = {
+var _hoisted_11 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
   "class": "flex-shrink-0"
-};
-var _hoisted_12 = ["src"];
-var _hoisted_13 = {
+}, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+  "class": "visitor-avatar"
+}, "V"), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <span class=\"active\"></span> ")], -1 /* HOISTED */);
+var _hoisted_12 = {
   "class": "flex-grow-1 ms-3"
 };
-var _hoisted_14 = {
-  key: 0,
-  "class": "badge text-bg-danger unread-badge",
-  style: {
-    "position": "absolute",
-    "right": "3%",
-    "top": "25%"
-  }
-};
-var _hoisted_15 = {
+var _hoisted_13 = {
   "class": "chatbox"
 };
-var _hoisted_16 = {
+var _hoisted_14 = {
   "class": "modal-dialog-scrollable"
 };
-var _hoisted_17 = {
+var _hoisted_15 = {
   "class": "modal-content"
 };
-var _hoisted_18 = {
+var _hoisted_16 = {
+  key: 0,
   "class": "msg-head"
 };
-var _hoisted_19 = {
+var _hoisted_17 = {
   "class": "row"
 };
-var _hoisted_20 = {
+var _hoisted_18 = {
   "class": "col-md-8"
 };
+var _hoisted_19 = {
+  "class": "d-flex align-items-center ms-3"
+};
+var _hoisted_20 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+  "class": "visitor-avatar"
+}, "V", -1 /* HOISTED */);
 var _hoisted_21 = {
-  "class": "d-flex align-items-center"
+  "class": "col-md-4"
 };
 var _hoisted_22 = {
-  "class": "flex-grow-1 ms-3"
-};
-var _hoisted_23 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
-  "class": "col-md-4"
-}, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
   "class": "d-flex justify-content-end"
-})], -1 /* HOISTED */);
-var _hoisted_24 = {
+};
+var _hoisted_23 = {
   "class": "scrollable modal-body",
   ref: "hasScrolledToBottom"
 };
-var _hoisted_25 = {
+var _hoisted_24 = {
   "class": "msg-body p-3"
 };
-var _hoisted_26 = {
+var _hoisted_25 = {
   "class": "table table-responsive caption-top table-striped border"
 };
-var _hoisted_27 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("caption", null, "List of users", -1 /* HOISTED */);
+var _hoisted_26 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("caption", null, "List of users", -1 /* HOISTED */);
+var _hoisted_27 = ["onClick"];
 var _hoisted_28 = {
+  "class": ""
+};
+var _hoisted_29 = {
+  key: 0,
+  "class": "sender"
+};
+var _hoisted_30 = {
+  "class": "time"
+};
+var _hoisted_31 = {
+  key: 1,
+  "class": "repaly"
+};
+var _hoisted_32 = {
+  "class": "time"
+};
+var _hoisted_33 = {
   "class": "send-box position-relative d-none",
   id: "chatBox"
 };
-var _hoisted_29 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+var _hoisted_34 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
   type: "submit",
   id: "btn-chat"
 }, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
@@ -46827,25 +46813,52 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     type: "button",
     "class": "btn btn-danger btn-sm",
     onClick: _cache[0] || (_cache[0] = function () {})
-  }, "Open")])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_7, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_8, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_9, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($setup.visitors, function (visitor) {
+  }, "Open")])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_7, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_8, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_9, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($setup.state.activeVisits, function (visitor) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("a", {
       href: "javascript:void(0)",
-      "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(["d-flex align-items-center px-3 py-2", visitor.visitor_id == $setup.state.visitor ? 'selected-user' : '']),
+      "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(["d-flex align-items-center px-3 py-2", visitor.visitor_id == $setup.state.currentVisitor.visitor_id ? 'selected-user' : '']),
       onClick: function onClick($event) {
-        return $setup.fetchMessages(visitor.visitor_id, visitor.name, visitor.email);
+        return $setup.fetchMessages(visitor);
       }
-    }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_11, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("img", {
-      "class": "img-fluid",
-      src: visitor.avatar,
-      alt: "user img"
-    }, null, 8 /* PROPS */, _hoisted_12), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <span class=\"active\"></span> ")]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_13, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h3", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(visitor.name), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(visitor.email), 1 /* TEXT */)]), visitor.messages_count > 0 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_14, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(visitor.messages_count), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)], 10 /* CLASS, PROPS */, _hoisted_10);
-  }), 256 /* UNKEYED_FRAGMENT */))])])])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" chatbox "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_15, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_16, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_17, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_18, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_19, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_20, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_21, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_22, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h3", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($setup.state.visitor_name), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($setup.state.visitor_email), 1 /* TEXT */)])])]), _hoisted_23])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_24, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_25, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("table", _hoisted_26, [_hoisted_27, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tbody", null, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($setup.state.pendingVisits, function (pending) {
+    }, [_hoisted_11, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_12, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h3", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(visitor.visitor_id), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <p>{{ visitor.email }}</p> ")]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <span class=\"badge text-bg-danger unread-badge\" style=\"position: absolute;right: 3%;top: 25%;\"\r\n                                            v-if=\"visitor.messages_count > 0\">{{ visitor.messages_count }}</span> ")], 10 /* CLASS, PROPS */, _hoisted_10);
+  }), 256 /* UNKEYED_FRAGMENT */))])])])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" chatbox "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_13, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_14, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_15, [$setup.state.currentVisitor != '' ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_16, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_17, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_18, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_19, [_hoisted_20, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($setup.state.currentVisitor.visitor_id), 1 /* TEXT */)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_21, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_22, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    type: "button",
+    "class": "btn btn-primary",
+    onClick: _cache[1] || (_cache[1] = function ($event) {
+      return $setup.endChat();
+    }),
+    style: {
+      "--bs-btn-padding-y": ".25rem",
+      "--bs-btn-padding-x": ".5rem",
+      "--bs-btn-font-size": ".75rem"
+    }
+  }, "End Chat")])])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_23, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_24, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("table", _hoisted_25, [_hoisted_26, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tbody", null, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($setup.state.pendingVisits, function (pending) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("tr", {
       key: pending.key
-    }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(pending.visitor_id), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(pending.message), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(pending.timestamp), 1 /* TEXT */)]);
-  }), 128 /* KEYED_FRAGMENT */))])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <ul class=\"\">\r\n                                <template v-for=\"message in state.messages\" :key=\"message.key\">\r\n                                    <li class=\"sender\" v-if=\"message.sender == state.visitor\">\r\n                                        <p> {{ message.content }} </p>\r\n                                        <span class=\"time\">{{ new Date(message.timestamp).toLocaleString(undefined, { hour12: true, hour: 'numeric', minute: '2-digit', second: '2-digit',}) }} {{ (message.read == 1) ? 'read' : 'unread' }}</span>\r\n                                    </li>\r\n                                    <li class=\"repaly\" v-else-if=\"message.sender == state.operator\">\r\n                                        <p> {{ message.content }} </p>\r\n                                        <span class=\"time\">{{ new Date(message.timestamp).toLocaleString(undefined, { hour12: true, hour: 'numeric', minute: '2-digit', second: '2-digit', }) }} {{ (message.read == 1) ? 'read' : 'unread' }}</span>\r\n                                    </li>\r\n                                </template>\r\n                            </ul> ")])], 512 /* NEED_PATCH */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_28, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("form", {
+    }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(pending.visitor_id), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(pending.message), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(pending.timestamp), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", {
+      type: "button",
+      "class": "btn btn-sm btn-success",
+      onClick: function onClick($event) {
+        return $setup.joinChat(pending);
+      }
+    }, "Join Chat", 8 /* PROPS */, _hoisted_27)])]);
+  }), 128 /* KEYED_FRAGMENT */))])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("ul", _hoisted_28, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($setup.state.messages, function (message) {
+    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+      key: message.key
+    }, [message.sender == $setup.state.currentVisitor.visitor_id ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("li", _hoisted_29, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(message.message), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_30, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(new Date(message.timestamp).toLocaleString(undefined, {
+      hour12: true,
+      hour: 'numeric',
+      minute: '2-digit',
+      second: '2-digit'
+    })), 1 /* TEXT */)])) : message.sender == $setup.operator.operator_id ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("li", _hoisted_31, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(message.message), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_32, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(new Date(message.timestamp).toLocaleString(undefined, {
+      hour12: true,
+      hour: 'numeric',
+      minute: '2-digit',
+      second: '2-digit'
+    })) + " " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(message.read == 1 ? 'read' : 'unread'), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)], 64 /* STABLE_FRAGMENT */);
+  }), 128 /* KEYED_FRAGMENT */))])])], 512 /* NEED_PATCH */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_33, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("form", {
     action: "javascript:void(0)",
-    onSubmit: _cache[3] || (_cache[3] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function () {
+    onSubmit: _cache[4] || (_cache[4] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function () {
       return $setup.SendMessage && $setup.SendMessage.apply($setup, arguments);
     }, ["prevent"]))
   }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <EmojiPicker :display-recent=\"true\" :disableSkinTones=\"false\" @select=\"onSelectEmoji\" class=\"d-none\" />\r\n                            <a tabindex=\"0\" class=\"p-2\" role=\"button\" @click=\"showEmoji\" >😀</a> "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
@@ -46853,13 +46866,13 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "class": "form-control",
     "aria-label": "message…",
     placeholder: "Write message…",
-    "onUpdate:modelValue": _cache[1] || (_cache[1] = function ($event) {
+    "onUpdate:modelValue": _cache[2] || (_cache[2] = function ($event) {
       return $setup.inputMessage = $event;
     }),
-    onKeyup: _cache[2] || (_cache[2] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withKeys)(function () {
+    onKeyup: _cache[3] || (_cache[3] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withKeys)(function () {
       return $setup.SendMessage && $setup.SendMessage.apply($setup, arguments);
     }, ["enter"]))
-  }, null, 544 /* HYDRATE_EVENTS, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $setup.inputMessage]]), _hoisted_29], 32 /* HYDRATE_EVENTS */)])])])])]);
+  }, null, 544 /* HYDRATE_EVENTS, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $setup.inputMessage]]), _hoisted_34], 32 /* HYDRATE_EVENTS */)])])])])]);
 }
 
 /***/ }),
@@ -52230,7 +52243,7 @@ __webpack_require__.r(__webpack_exports__);
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 ___CSS_LOADER_EXPORT___.i(_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_css_chat_css__WEBPACK_IMPORTED_MODULE_1__["default"]);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.v3-emoji-picker {\r\n    position: absolute;\r\n    text-align: left;\r\n    bottom: 85%;\r\n    left: 2%;\n}\n.v3-emoji-picker .v3-footer {\r\n    display: none;\n}\n.unread-badge {\r\n    font-size: 11px;\r\n    border-radius: 25px;\r\n    padding: 3px 5px;\n}\r\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.v3-emoji-picker {\r\n    position: absolute;\r\n    text-align: left;\r\n    bottom: 85%;\r\n    left: 2%;\n}\n.v3-emoji-picker .v3-footer {\r\n    display: none;\n}\n.unread-badge {\r\n    font-size: 11px;\r\n    border-radius: 25px;\r\n    padding: 3px 5px;\n}\n.visitor-avatar {\r\n    width: 25px;\r\n    height: 25px;\r\n    background-color: coral;\r\n    margin-right: 10px;\r\n    display: flex;\r\n    justify-content: center;\r\n    align-items: center;\r\n    color: aliceblue;\r\n    font-weight: 600;\r\n    border-radius: 5px;\n}\r\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -52254,7 +52267,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "/* **********************************\r\nReset CSS\r\n************************************** */\r\n\r\nhtml,\r\nbody,\r\ndiv,\r\nspan,\r\napplet,\r\nobject,\r\niframe,\r\nh1,\r\nh2,\r\nh3,\r\nh4,\r\nh5,\r\nh6,\r\np,\r\nblockquote,\r\npre,\r\na,\r\nabbr,\r\nacronym,\r\naddress,\r\nbig,\r\ncite,\r\ncode,\r\ndel,\r\ndfn,\r\nem,\r\nimg,\r\nins,\r\nkbd,\r\nq,\r\ns,\r\nsamp,\r\nsmall,\r\nstrike,\r\nstrong,\r\nsub,\r\nsup,\r\ntt,\r\nvar,\r\nb,\r\nu,\r\ni,\r\ncenter,\r\ndl,\r\ndt,\r\ndd,\r\nol,\r\nul,\r\nli,\r\nfieldset,\r\nform,\r\nlabel,\r\nlegend,\r\ntable,\r\ncaption,\r\ntbody,\r\ntfoot,\r\nthead,\r\ntr,\r\nth,\r\ntd,\r\narticle,\r\naside,\r\ncanvas,\r\ndetails,\r\nembed,\r\nfigure,\r\nfigcaption,\r\nfooter,\r\nheader,\r\nhgroup,\r\nmenu,\r\nnav,\r\noutput,\r\nruby,\r\nsection,\r\nsummary,\r\ntime,\r\nmark,\r\naudio,\r\nvideo {\r\n    margin: 0;\r\n    padding: 0;\r\n    border: 0;\r\n    font-size: 100%;\r\n    font: inherit;\r\n    vertical-align: baseline;\r\n}\r\n\r\n\r\n/* HTML5 display-role reset for older browsers */\r\n\r\narticle,\r\naside,\r\ndetails,\r\nfigcaption,\r\nfigure,\r\nfooter,\r\nheader,\r\nhgroup,\r\nmenu,\r\nnav,\r\nsection {\r\n    display: block;\r\n}\r\n\r\nbody {\r\n    line-height: 1.5;\r\n}\r\n\r\nol,\r\nul {\r\n    list-style: none;\r\n}\r\n\r\nblockquote,\r\nq {\r\n    quotes: none;\r\n}\r\n\r\nblockquote:before,\r\nblockquote:after,\r\nq:before,\r\nq:after {\r\n    content: '';\r\n    content: none;\r\n}\r\n\r\ntable {\r\n    border-collapse: collapse;\r\n    border-spacing: 0;\r\n}\r\n\r\n\r\n/********************************\r\n Typography Style\r\n******************************** */\r\n\r\nbody {\r\n    margin: 0;\r\n    font-family: 'Open Sans', sans-serif;\r\n    line-height: 1.5;\r\n    -webkit-font-smoothing: antialiased;\r\n    -moz-osx-font-smoothing: grayscale;\r\n}\r\n\r\nhtml {\r\n    min-height: 100%;\r\n    -webkit-font-smoothing: antialiased;\r\n    -moz-osx-font-smoothing: grayscale;\r\n}\r\n\r\nh1 {\r\n    font-size: 36px;\r\n}\r\n\r\nh2 {\r\n    font-size: 30px;\r\n}\r\n\r\nh3 {\r\n    font-size: 26px;\r\n}\r\n\r\nh4 {\r\n    font-size: 22px;\r\n}\r\n\r\nh5 {\r\n    font-size: 18px;\r\n}\r\n\r\nh6 {\r\n    font-size: 16px;\r\n}\r\n\r\np {\r\n    font-size: 15px;\r\n}\r\n\r\na {\r\n    text-decoration: none;\r\n    font-size: 15px;\r\n}\r\n\r\n* {\r\n  margin-bottom: 0;\r\n}\r\n\r\n.modal-dialog-scrollable .modal-body::-webkit-scrollbar {\r\n    width: 4px;\r\n    border-radius: 3px;\r\n}\r\n\r\n/* Track */\r\n.modal-dialog-scrollable .modal-body::-webkit-scrollbar-track {\r\n    background: #f1f1f1;\r\n}\r\n\r\n/* Handle */\r\n.modal-dialog-scrollable .modal-body::-webkit-scrollbar-thumb {\r\n    background: #cacaca;\r\n}\r\n\r\n/* Handle on hover */\r\n.modal-dialog-scrollable .modal-body::-webkit-scrollbar-thumb:hover {\r\n    background: #aaaaaa;\r\n}\r\n\r\n/* *******************************\r\nmessage-area\r\n******************************** */\r\n\r\n.message-area {\r\n    height: 100vh;\r\n    overflow: hidden;\r\n    padding: 30px 0;\r\n    background: #f5f5f5;\r\n}\r\n\r\n.chat-area {\r\n    position: relative;\r\n    width: 100%;\r\n    background-color: #fff;\r\n    border-radius: 0.3rem;\r\n    height: 83vh;\r\n    overflow: hidden;\r\n    min-height: calc(100% - 1rem);\r\n}\r\n\r\n.chatlist {\r\n    outline: 0;\r\n    height: 100%;\r\n    overflow: hidden;\r\n    width: 300px;\r\n    float: left;\r\n    padding: 15px;\r\n}\r\n.chatlist a img, .msg-head img.avatar {\r\n    width: 50px;\r\n    height: 50px;\r\n    border-radius: 25px;\r\n}\r\n\r\n.chat-area .modal-content {\r\n    border: none;\r\n    border-radius: 0;\r\n    outline: 0;\r\n    height: 100%;\r\n}\r\n\r\n.chat-area .modal-dialog-scrollable {\r\n    height: 100% !important;\r\n}\r\n\r\n.chatbox {\r\n    width: auto;\r\n    overflow: hidden;\r\n    height: 100%;\r\n    border-left: 1px solid #ccc;\r\n}\r\n\r\n.chatbox .modal-dialog,\r\n.chatlist .modal-dialog {\r\n    max-width: 100%;\r\n    margin: 0;\r\n}\r\n\r\n.msg-search {\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: space-between;\r\n}\r\n\r\n.chat-area .form-control {\r\n    display: block;\r\n    width: 80%;\r\n    padding: 0.375rem 0.75rem;\r\n    font-size: 14px;\r\n    font-weight: 400;\r\n    line-height: 1.5;\r\n    color: #222;\r\n    background-color: #fff;\r\n    background-clip: padding-box;\r\n    border: 1px solid #ccc;\r\n    -webkit-appearance: none;\r\n    -moz-appearance: none;\r\n    appearance: none;\r\n    border-radius: 0.25rem;\r\n    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;\r\n}\r\n\r\n.chat-area .form-control:focus {\r\n    outline: 0;\r\n    box-shadow: inherit;\r\n}\r\n\r\na.add img {\r\n    height: 36px;\r\n}\r\n\r\n.chat-area .nav-tabs {\r\n    border-bottom: 1px solid #dee2e6;\r\n    align-items: center;\r\n    justify-content: space-between;\r\n    flex-wrap: inherit;\r\n}\r\n\r\n.chat-area .nav-tabs .nav-item {\r\n    width: 100%;\r\n}\r\n\r\n.chat-area .nav-tabs .nav-link {\r\n    width: 100%;\r\n    color: #180660;\r\n    font-size: 14px;\r\n    font-weight: 500;\r\n    line-height: 1.5;\r\n    text-transform: capitalize;\r\n    margin-top: 5px;\r\n    margin-bottom: -1px;\r\n    background: 0 0;\r\n    border: 1px solid transparent;\r\n    border-top-left-radius: 0.25rem;\r\n    border-top-right-radius: 0.25rem;\r\n}\r\n\r\n.chat-area .nav-tabs .nav-item.show .nav-link,\r\n.chat-area .nav-tabs .nav-link.active {\r\n    color: #222;\r\n    background-color: #fff;\r\n    border-color: transparent transparent #000;\r\n}\r\n\r\n.chat-area .nav-tabs .nav-link:focus,\r\n.chat-area .nav-tabs .nav-link:hover {\r\n    border-color: transparent transparent #000;\r\n    isolation: isolate;\r\n}\r\n\r\n.chat-list h3 {\r\n    color: #222;\r\n    font-size: 16px;\r\n    font-weight: 500;\r\n    line-height: 1.5;\r\n    text-transform: capitalize;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.chat-list p {\r\n    color: #343434;\r\n    font-size: 14px;\r\n    font-weight: 400;\r\n    line-height: 1.5;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.chat-list a.d-flex {\r\n    margin: 0px 2px 2px 2px;\r\n    position: relative;\r\n    text-decoration: none;\r\n}\r\n.chat-list a.selected-user{\r\n    background-color: #a23dff;\r\n    border-radius: 10px;\r\n}\r\n.chat-list a.selected-user h3{\r\n    color: #f6f6f6;\r\n    font-weight: 600;\r\n}\r\n.chat-list a.selected-user p{\r\n    color: #e6e6e6;\r\n}\r\n\r\n.chat-list .active {\r\n    display: block;\r\n    content: '';\r\n    clear: both;\r\n    position: absolute;\r\n    bottom: 12px;\r\n    left: 49px;\r\n    height: 12px;\r\n    width: 12px;\r\n    background: #00DB75;\r\n    border-radius: 50%;\r\n    border: 2px solid #fff;\r\n}\r\n\r\n.msg-head h3 {\r\n    color: #222;\r\n    font-size: 18px;\r\n    font-weight: 600;\r\n    text-transform: capitalize;\r\n    line-height: 1.5;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.msg-head p {\r\n    color: #343434;\r\n    font-size: 14px;\r\n    font-weight: 400;\r\n    line-height: 1.5;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.msg-head {\r\n    padding: 15px;\r\n    border-bottom: 1px solid #ccc;\r\n}\r\n\r\n.moreoption {\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: end;\r\n}\r\n\r\n.moreoption .navbar {\r\n    padding: 0;\r\n}\r\n\r\n.moreoption li .nav-link {\r\n    color: #222;\r\n    font-size: 16px;\r\n}\r\n\r\n.moreoption .dropdown-toggle::after {\r\n    display: none;\r\n}\r\n\r\n.moreoption .dropdown-menu[data-bs-popper] {\r\n    top: 100%;\r\n    left: auto;\r\n    right: 0;\r\n    margin-top: 0.125rem;\r\n}\r\n\r\n.msg-body ul {\r\n    overflow: hidden;\r\n}\r\n\r\n.msg-body ul li {\r\n    list-style: none;\r\n    margin: 15px 0;\r\n}\r\n\r\n.msg-body ul li.sender {\r\n    display: block;\r\n    width: 100%;\r\n    position: relative;\r\n}\r\n\r\n.msg-body ul li.sender:before {\r\n    display: block;\r\n    clear: both;\r\n    content: '';\r\n    position: absolute;\r\n    top: 0px;\r\n    left: -3px;\r\n    width: 0;\r\n    height: 0;\r\n    border-style: solid;\r\n    border-width: 0 12px 15px 12px;\r\n    border-color: transparent transparent #b769ff transparent;\r\n    -webkit-transform: rotate(-142deg);\r\n    -ms-transform: rotate(-142deg);\r\n    transform: rotate(-142deg);\r\n}\r\n\r\n.msg-body ul li.sender p {\r\n    color: #f5f5f5;\r\n    font-size: 14px;\r\n    line-height: 1.5;\r\n    font-weight: 400;\r\n    padding: 15px;\r\n    margin-left: 5px;\r\n    background: #b769ff;\r\n    display: inline-block;\r\n    border-bottom-left-radius: 10px;\r\n    border-top-right-radius: 10px;\r\n    border-bottom-right-radius: 10px;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.msg-body ul li.sender p b {\r\n    display: block;\r\n    color: #180660;\r\n    font-size: 14px;\r\n    line-height: 1.5;\r\n    font-weight: 500;\r\n}\r\n\r\n.msg-body ul li p span {\r\n    font-weight: 600;\r\n}\r\n\r\n.msg-body ul li.repaly {\r\n    display: block;\r\n    width: 100%;\r\n    text-align: right;\r\n    position: relative;\r\n}\r\n\r\n.msg-body ul li.repaly:before {\r\n    display: block;\r\n    clear: both;\r\n    content: '';\r\n    position: absolute;\r\n    bottom: 15px;\r\n    right: -2px;\r\n    width: 0;\r\n    height: 0;\r\n    border-style: solid;\r\n    border-width: 0 12px 15px 12px;\r\n    border-color: transparent transparent #f5f5f5 transparent;\r\n    -webkit-transform: rotate(37deg);\r\n    -ms-transform: rotate(37deg);\r\n    transform: rotate(37deg);\r\n}\r\n\r\n.msg-body ul li.repaly p {\r\n    color: #333;\r\n    font-size: 14px;\r\n    line-height: 1.5;\r\n    font-weight: 400;\r\n    padding: 15px;\r\n    margin-right: 5px;\r\n    background: #f5f5f5;\r\n    display: inline-block;\r\n    border-top-left-radius: 10px;\r\n    border-top-right-radius: 10px;\r\n    border-bottom-left-radius: 10px;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.msg-body ul li.repaly p b {\r\n    display: block;\r\n    color: #061061;\r\n    font-size: 14px;\r\n    line-height: 1.5;\r\n    font-weight: 500;\r\n}\r\n\r\n.msg-body ul li.repaly:after {\r\n    display: block;\r\n    content: '';\r\n    clear: both;\r\n}\r\n\r\n.time {\r\n    display: block;\r\n    color: #000;\r\n    margin-left: 15px;\r\n    font-size: 12px;\r\n    line-height: 1.5;\r\n    font-weight: 400;\r\n}\r\n\r\nli.repaly .time {\r\n    margin-right: 20px;\r\n}\r\n\r\n.divider {\r\n    position: relative;\r\n    z-index: 1;\r\n    text-align: center;\r\n}\r\n\r\n.msg-body h6 {\r\n    text-align: center;\r\n    font-weight: normal;\r\n    font-size: 14px;\r\n    line-height: 1.5;\r\n    color: #222;\r\n    background: #fff;\r\n    display: inline-block;\r\n    padding: 0 5px;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.divider:after {\r\n    display: block;\r\n    content: '';\r\n    clear: both;\r\n    position: absolute;\r\n    top: 12px;\r\n    left: 0;\r\n    border-top: 1px solid #EBEBEB;\r\n    width: 100%;\r\n    height: 100%;\r\n    z-index: -1;\r\n}\r\n\r\n.send-box {\r\n    padding: 15px;\r\n    border-top: 1px solid #ccc;\r\n}\r\n\r\n.send-box form {\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: space-between;\r\n}\r\n\r\n.send-box .form-control {\r\n    display: block;\r\n    width: 85%;\r\n    padding: 0.375rem 0.75rem;\r\n    font-size: 14px;\r\n    font-weight: 400;\r\n    line-height: 1.5;\r\n    color: #222;\r\n    background-color: #fff;\r\n    background-clip: padding-box;\r\n    border: 1px solid #ccc;\r\n    -webkit-appearance: none;\r\n    -moz-appearance: none;\r\n    appearance: none;\r\n    border-radius: 0.25rem;\r\n    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;\r\n}\r\n\r\n.send-box button {\r\n    border: none;\r\n    background: #a23dff;\r\n    padding: 0.375rem 5px;\r\n    color: #fff;\r\n    border-radius: 0.25rem;\r\n    font-size: 14px;\r\n    font-weight: 400;\r\n    width: 24%;\r\n    margin-left: 1%;\r\n}\r\n\r\n.send-box button i {\r\n    margin-right: 5px;\r\n}\r\n\r\n.send-btns .button-wrapper {\r\n    position: relative;\r\n    width: 125px;\r\n    height: auto;\r\n    text-align: left;\r\n    margin: 0 auto;\r\n    display: block;\r\n    background: #F6F7FA;\r\n    border-radius: 3px;\r\n    padding: 5px 15px;\r\n    float: left;\r\n    margin-right: 5px;\r\n    margin-bottom: 5px;\r\n    overflow: hidden;\r\n}\r\n\r\n.send-btns .button-wrapper span.label {\r\n    position: relative;\r\n    z-index: 1;\r\n    display: -webkit-box;\r\n    display: -ms-flexbox;\r\n    display: flex;\r\n    -webkit-box-align: center;\r\n    -ms-flex-align: center;\r\n    align-items: center;\r\n    width: 100%;\r\n    cursor: pointer;\r\n    color: #343945;\r\n    font-weight: 400;\r\n    text-transform: capitalize;\r\n    font-size: 13px;\r\n}\r\n\r\n#upload {\r\n    display: inline-block;\r\n    position: absolute;\r\n    z-index: 1;\r\n    width: 100%;\r\n    height: 100%;\r\n    top: 0;\r\n    left: 0;\r\n    opacity: 0;\r\n    cursor: pointer;\r\n}\r\n\r\n.send-btns .attach .form-control {\r\n    display: inline-block;\r\n    width: 120px;\r\n    height: auto;\r\n    padding: 5px 8px;\r\n    font-size: 13px;\r\n    font-weight: 400;\r\n    line-height: 1.5;\r\n    color: #343945;\r\n    background-color: #F6F7FA;\r\n    background-clip: padding-box;\r\n    border: 1px solid #F6F7FA;\r\n    border-radius: 3px;\r\n    margin-bottom: 5px;\r\n}\r\n\r\n.send-btns .button-wrapper span.label img {\r\n    margin-right: 5px;\r\n}\r\n\r\n.button-wrapper {\r\n    position: relative;\r\n    width: 100px;\r\n    height: 100px;\r\n    text-align: center;\r\n    margin: 0 auto;\r\n}\r\n\r\nbutton:focus {\r\n    outline: 0;\r\n}\r\n\r\n.add-apoint {\r\n    display: inline-block;\r\n    margin-left: 5px;\r\n}\r\n\r\n.add-apoint a {\r\n    text-decoration: none;\r\n    background: #F6F7FA;\r\n    border-radius: 8px;\r\n    padding: 8px 8px;\r\n    font-size: 13px;\r\n    font-weight: 400;\r\n    line-height: 1.2;\r\n    color: #343945;\r\n}\r\n\r\n.add-apoint a svg {\r\n    margin-right: 5px;\r\n}\r\n\r\n.chat-icon {\r\n    display: none;\r\n}\r\n\r\n.closess i {\r\n    display: none;\r\n}\r\n\r\n\r\n\r\n@media (max-width: 767px) {\r\n    .chat-icon {\r\n        display: block;\r\n        margin-right: 5px;\r\n    }\r\n    .chatlist {\r\n        width: 0%;\r\n    }\r\n    .chatbox {\r\n        width: 100%;\r\n        position: static;\r\n        left: 1000px;\r\n        right: 0;\r\n        background: #fff;\r\n        transition: all 0.5s ease;\r\n        border-left: none;\r\n    }\r\n    .showbox {\r\n        left: 0 !important;\r\n        transition: all 0.5s ease;\r\n    }\r\n    .msg-head h3 {\r\n        text-transform: capitalize;\r\n        font-size: 14px;\r\n    }\r\n    .msg-head p {\r\n        font-size: 12px;\r\n    }\r\n    .msg-head .flex-shrink-0 img {\r\n        height: 30px;\r\n    }\r\n    .send-box button {\r\n        width: 28%;\r\n    }\r\n    .send-box .form-control {\r\n        width: 70%;\r\n    }\r\n    .chat-list h3 {\r\n        font-size: 14px;\r\n    }\r\n    .chat-list p {\r\n        font-size: 12px;\r\n    }\r\n    .msg-body ul li.sender p {\r\n        font-size: 13px;\r\n        padding: 8px;\r\n        border-bottom-left-radius: 6px;\r\n        border-top-right-radius: 6px;\r\n        border-bottom-right-radius: 6px;\r\n    }\r\n    .msg-body ul li.repaly p {\r\n        font-size: 13px;\r\n        padding: 8px;\r\n        border-top-left-radius: 6px;\r\n        border-top-right-radius: 6px;\r\n        border-bottom-left-radius: 6px;\r\n    }\r\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "/* **********************************\r\nReset CSS\r\n************************************** */\r\n\r\nhtml,\r\nbody,\r\ndiv,\r\nspan,\r\napplet,\r\nobject,\r\niframe,\r\nh1,\r\nh2,\r\nh3,\r\nh4,\r\nh5,\r\nh6,\r\np,\r\nblockquote,\r\npre,\r\na,\r\nabbr,\r\nacronym,\r\naddress,\r\nbig,\r\ncite,\r\ncode,\r\ndel,\r\ndfn,\r\nem,\r\nimg,\r\nins,\r\nkbd,\r\nq,\r\ns,\r\nsamp,\r\nsmall,\r\nstrike,\r\nstrong,\r\nsub,\r\nsup,\r\ntt,\r\nvar,\r\nb,\r\nu,\r\ni,\r\ncenter,\r\ndl,\r\ndt,\r\ndd,\r\nol,\r\nul,\r\nli,\r\nfieldset,\r\nform,\r\nlabel,\r\nlegend,\r\ntable,\r\ncaption,\r\ntbody,\r\ntfoot,\r\nthead,\r\ntr,\r\nth,\r\ntd,\r\narticle,\r\naside,\r\ncanvas,\r\ndetails,\r\nembed,\r\nfigure,\r\nfigcaption,\r\nfooter,\r\nheader,\r\nhgroup,\r\nmenu,\r\nnav,\r\noutput,\r\nruby,\r\nsection,\r\nsummary,\r\ntime,\r\nmark,\r\naudio,\r\nvideo {\r\n    margin: 0;\r\n    padding: 0;\r\n    border: 0;\r\n    font-size: 100%;\r\n    font: inherit;\r\n    vertical-align: baseline;\r\n}\r\n\r\n\r\n/* HTML5 display-role reset for older browsers */\r\n\r\narticle,\r\naside,\r\ndetails,\r\nfigcaption,\r\nfigure,\r\nfooter,\r\nheader,\r\nhgroup,\r\nmenu,\r\nnav,\r\nsection {\r\n    display: block;\r\n}\r\n\r\nbody {\r\n    line-height: 1.5;\r\n}\r\n\r\nol,\r\nul {\r\n    list-style: none;\r\n}\r\n\r\nblockquote,\r\nq {\r\n    quotes: none;\r\n}\r\n\r\nblockquote:before,\r\nblockquote:after,\r\nq:before,\r\nq:after {\r\n    content: '';\r\n    content: none;\r\n}\r\n\r\ntable {\r\n    border-collapse: collapse;\r\n    border-spacing: 0;\r\n}\r\n\r\n\r\n/********************************\r\n Typography Style\r\n******************************** */\r\n\r\nbody {\r\n    margin: 0;\r\n    font-family: 'Open Sans', sans-serif;\r\n    line-height: 1.5;\r\n    -webkit-font-smoothing: antialiased;\r\n    -moz-osx-font-smoothing: grayscale;\r\n}\r\n\r\nhtml {\r\n    min-height: 100%;\r\n    -webkit-font-smoothing: antialiased;\r\n    -moz-osx-font-smoothing: grayscale;\r\n}\r\n\r\nh1 {\r\n    font-size: 36px;\r\n}\r\n\r\nh2 {\r\n    font-size: 30px;\r\n}\r\n\r\nh3 {\r\n    font-size: 26px;\r\n}\r\n\r\nh4 {\r\n    font-size: 22px;\r\n}\r\n\r\nh5 {\r\n    font-size: 18px;\r\n}\r\n\r\nh6 {\r\n    font-size: 16px;\r\n}\r\n\r\np {\r\n    font-size: 15px;\r\n}\r\n\r\na {\r\n    text-decoration: none;\r\n    font-size: 15px;\r\n}\r\n\r\n* {\r\n  margin-bottom: 0;\r\n}\r\n\r\n.modal-dialog-scrollable .modal-body::-webkit-scrollbar {\r\n    width: 4px;\r\n    border-radius: 3px;\r\n}\r\n\r\n/* Track */\r\n.modal-dialog-scrollable .modal-body::-webkit-scrollbar-track {\r\n    background: #f1f1f1;\r\n}\r\n\r\n/* Handle */\r\n.modal-dialog-scrollable .modal-body::-webkit-scrollbar-thumb {\r\n    background: #cacaca;\r\n}\r\n\r\n/* Handle on hover */\r\n.modal-dialog-scrollable .modal-body::-webkit-scrollbar-thumb:hover {\r\n    background: #aaaaaa;\r\n}\r\n\r\n/* *******************************\r\nmessage-area\r\n******************************** */\r\n\r\n.message-area {\r\n    height: 100vh;\r\n    overflow: hidden;\r\n    padding: 30px 0;\r\n    background: #f5f5f5;\r\n}\r\n\r\n.chat-area {\r\n    position: relative;\r\n    width: 100%;\r\n    background-color: #fff;\r\n    border-radius: 0.3rem;\r\n    height: 83vh;\r\n    overflow: hidden;\r\n    min-height: calc(100% - 1rem);\r\n}\r\n\r\n.chatlist {\r\n    outline: 0;\r\n    height: 100%;\r\n    overflow: hidden;\r\n    width: 300px;\r\n    float: left;\r\n    padding: 15px;\r\n}\r\n.chatlist a img, .msg-head img.avatar {\r\n    width: 50px;\r\n    height: 50px;\r\n    border-radius: 25px;\r\n}\r\n\r\n.chat-area .modal-content {\r\n    border: none;\r\n    border-radius: 0;\r\n    outline: 0;\r\n    height: 100%;\r\n}\r\n\r\n.chat-area .modal-dialog-scrollable {\r\n    height: 100% !important;\r\n}\r\n\r\n.chatbox {\r\n    width: auto;\r\n    overflow: hidden;\r\n    height: 100%;\r\n    border-left: 1px solid #ccc;\r\n}\r\n\r\n.chatbox .modal-dialog,\r\n.chatlist .modal-dialog {\r\n    max-width: 100%;\r\n    margin: 0;\r\n}\r\n\r\n.msg-search {\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: space-between;\r\n}\r\n\r\n.chat-area .form-control {\r\n    display: block;\r\n    width: 80%;\r\n    padding: 0.375rem 0.75rem;\r\n    font-size: 14px;\r\n    font-weight: 400;\r\n    line-height: 1.5;\r\n    color: #222;\r\n    background-color: #fff;\r\n    background-clip: padding-box;\r\n    border: 1px solid #ccc;\r\n    -webkit-appearance: none;\r\n    -moz-appearance: none;\r\n    appearance: none;\r\n    border-radius: 0.25rem;\r\n    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;\r\n}\r\n\r\n.chat-area .form-control:focus {\r\n    outline: 0;\r\n    box-shadow: inherit;\r\n}\r\n\r\na.add img {\r\n    height: 36px;\r\n}\r\n\r\n.chat-area .nav-tabs {\r\n    border-bottom: 1px solid #dee2e6;\r\n    align-items: center;\r\n    justify-content: space-between;\r\n    flex-wrap: inherit;\r\n}\r\n\r\n.chat-area .nav-tabs .nav-item {\r\n    width: 100%;\r\n}\r\n\r\n.chat-area .nav-tabs .nav-link {\r\n    width: 100%;\r\n    color: #180660;\r\n    font-size: 14px;\r\n    font-weight: 500;\r\n    line-height: 1.5;\r\n    text-transform: capitalize;\r\n    margin-top: 5px;\r\n    margin-bottom: -1px;\r\n    background: 0 0;\r\n    border: 1px solid transparent;\r\n    border-top-left-radius: 0.25rem;\r\n    border-top-right-radius: 0.25rem;\r\n}\r\n\r\n.chat-area .nav-tabs .nav-item.show .nav-link,\r\n.chat-area .nav-tabs .nav-link.active {\r\n    color: #222;\r\n    background-color: #fff;\r\n    border-color: transparent transparent #000;\r\n}\r\n\r\n.chat-area .nav-tabs .nav-link:focus,\r\n.chat-area .nav-tabs .nav-link:hover {\r\n    border-color: transparent transparent #000;\r\n    isolation: isolate;\r\n}\r\n\r\n.chat-list h3 {\r\n    color: #222;\r\n    font-size: 16px;\r\n    font-weight: 500;\r\n    line-height: 1.5;\r\n    text-transform: capitalize;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.chat-list p {\r\n    color: #343434;\r\n    font-size: 14px;\r\n    font-weight: 400;\r\n    line-height: 1.5;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.chat-list a.d-flex {\r\n    margin: 0px 2px 2px 2px;\r\n    position: relative;\r\n    text-decoration: none;\r\n}\r\n.chat-list a.selected-user{\r\n    background-color: #a23dffbf;\r\n    border-radius: 5px;\r\n}\r\n.chat-list a.selected-user h3{\r\n    color: #f6f6f6;\r\n    font-weight: 600;\r\n}\r\n.chat-list a.selected-user p{\r\n    color: #e6e6e6;\r\n}\r\n\r\n.chat-list .active {\r\n    display: block;\r\n    content: '';\r\n    clear: both;\r\n    position: absolute;\r\n    bottom: 12px;\r\n    left: 49px;\r\n    height: 12px;\r\n    width: 12px;\r\n    background: #00DB75;\r\n    border-radius: 50%;\r\n    border: 2px solid #fff;\r\n}\r\n\r\n.msg-head h3 {\r\n    color: #222;\r\n    font-size: 18px;\r\n    font-weight: 600;\r\n    text-transform: capitalize;\r\n    line-height: 1.5;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.msg-head p {\r\n    color: #343434;\r\n    font-size: 14px;\r\n    font-weight: 400;\r\n    line-height: 1.5;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.msg-head {\r\n    padding: 15px;\r\n    border-bottom: 1px solid #ccc;\r\n}\r\n\r\n.moreoption {\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: end;\r\n}\r\n\r\n.moreoption .navbar {\r\n    padding: 0;\r\n}\r\n\r\n.moreoption li .nav-link {\r\n    color: #222;\r\n    font-size: 16px;\r\n}\r\n\r\n.moreoption .dropdown-toggle::after {\r\n    display: none;\r\n}\r\n\r\n.moreoption .dropdown-menu[data-bs-popper] {\r\n    top: 100%;\r\n    left: auto;\r\n    right: 0;\r\n    margin-top: 0.125rem;\r\n}\r\n\r\n.msg-body ul {\r\n    overflow: hidden;\r\n}\r\n\r\n.msg-body ul li {\r\n    list-style: none;\r\n    margin: 15px 0;\r\n}\r\n\r\n.msg-body ul li.sender {\r\n    display: block;\r\n    width: 100%;\r\n    position: relative;\r\n}\r\n\r\n.msg-body ul li.sender:before {\r\n    display: block;\r\n    clear: both;\r\n    content: '';\r\n    position: absolute;\r\n    top: 0px;\r\n    left: -3px;\r\n    width: 0;\r\n    height: 0;\r\n    border-style: solid;\r\n    border-width: 0 12px 15px 12px;\r\n    border-color: transparent transparent #b769ff transparent;\r\n    -webkit-transform: rotate(-142deg);\r\n    -ms-transform: rotate(-142deg);\r\n    transform: rotate(-142deg);\r\n}\r\n\r\n.msg-body ul li.sender p {\r\n    color: #f5f5f5;\r\n    font-size: 14px;\r\n    line-height: 1.5;\r\n    font-weight: 400;\r\n    padding: 15px;\r\n    margin-left: 5px;\r\n    background: #b769ff;\r\n    display: inline-block;\r\n    border-bottom-left-radius: 10px;\r\n    border-top-right-radius: 10px;\r\n    border-bottom-right-radius: 10px;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.msg-body ul li.sender p b {\r\n    display: block;\r\n    color: #180660;\r\n    font-size: 14px;\r\n    line-height: 1.5;\r\n    font-weight: 500;\r\n}\r\n\r\n.msg-body ul li p span {\r\n    font-weight: 600;\r\n}\r\n\r\n.msg-body ul li.repaly {\r\n    display: block;\r\n    width: 100%;\r\n    text-align: right;\r\n    position: relative;\r\n}\r\n\r\n.msg-body ul li.repaly:before {\r\n    display: block;\r\n    clear: both;\r\n    content: '';\r\n    position: absolute;\r\n    bottom: 15px;\r\n    right: -2px;\r\n    width: 0;\r\n    height: 0;\r\n    border-style: solid;\r\n    border-width: 0 12px 15px 12px;\r\n    border-color: transparent transparent #f5f5f5 transparent;\r\n    -webkit-transform: rotate(37deg);\r\n    -ms-transform: rotate(37deg);\r\n    transform: rotate(37deg);\r\n}\r\n\r\n.msg-body ul li.repaly p {\r\n    color: #333;\r\n    font-size: 14px;\r\n    line-height: 1.5;\r\n    font-weight: 400;\r\n    padding: 15px;\r\n    margin-right: 5px;\r\n    background: #f5f5f5;\r\n    display: inline-block;\r\n    border-top-left-radius: 10px;\r\n    border-top-right-radius: 10px;\r\n    border-bottom-left-radius: 10px;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.msg-body ul li.repaly p b {\r\n    display: block;\r\n    color: #061061;\r\n    font-size: 14px;\r\n    line-height: 1.5;\r\n    font-weight: 500;\r\n}\r\n\r\n.msg-body ul li.repaly:after {\r\n    display: block;\r\n    content: '';\r\n    clear: both;\r\n}\r\n\r\n.time {\r\n    display: block;\r\n    color: #000;\r\n    margin-left: 15px;\r\n    font-size: 12px;\r\n    line-height: 1.5;\r\n    font-weight: 400;\r\n}\r\n\r\nli.repaly .time {\r\n    margin-right: 20px;\r\n}\r\n\r\n.divider {\r\n    position: relative;\r\n    z-index: 1;\r\n    text-align: center;\r\n}\r\n\r\n.msg-body h6 {\r\n    text-align: center;\r\n    font-weight: normal;\r\n    font-size: 14px;\r\n    line-height: 1.5;\r\n    color: #222;\r\n    background: #fff;\r\n    display: inline-block;\r\n    padding: 0 5px;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.divider:after {\r\n    display: block;\r\n    content: '';\r\n    clear: both;\r\n    position: absolute;\r\n    top: 12px;\r\n    left: 0;\r\n    border-top: 1px solid #EBEBEB;\r\n    width: 100%;\r\n    height: 100%;\r\n    z-index: -1;\r\n}\r\n\r\n.send-box {\r\n    padding: 15px;\r\n    border-top: 1px solid #ccc;\r\n}\r\n\r\n.send-box form {\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: space-between;\r\n}\r\n\r\n.send-box .form-control {\r\n    display: block;\r\n    width: 85%;\r\n    padding: 0.375rem 0.75rem;\r\n    font-size: 14px;\r\n    font-weight: 400;\r\n    line-height: 1.5;\r\n    color: #222;\r\n    background-color: #fff;\r\n    background-clip: padding-box;\r\n    border: 1px solid #ccc;\r\n    -webkit-appearance: none;\r\n    -moz-appearance: none;\r\n    appearance: none;\r\n    border-radius: 0.25rem;\r\n    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;\r\n}\r\n\r\n.send-box button {\r\n    border: none;\r\n    background: #a23dff;\r\n    padding: 0.375rem 5px;\r\n    color: #fff;\r\n    border-radius: 0.25rem;\r\n    font-size: 14px;\r\n    font-weight: 400;\r\n    width: 24%;\r\n    margin-left: 1%;\r\n}\r\n\r\n.send-box button i {\r\n    margin-right: 5px;\r\n}\r\n\r\n.send-btns .button-wrapper {\r\n    position: relative;\r\n    width: 125px;\r\n    height: auto;\r\n    text-align: left;\r\n    margin: 0 auto;\r\n    display: block;\r\n    background: #F6F7FA;\r\n    border-radius: 3px;\r\n    padding: 5px 15px;\r\n    float: left;\r\n    margin-right: 5px;\r\n    margin-bottom: 5px;\r\n    overflow: hidden;\r\n}\r\n\r\n.send-btns .button-wrapper span.label {\r\n    position: relative;\r\n    z-index: 1;\r\n    display: -webkit-box;\r\n    display: -ms-flexbox;\r\n    display: flex;\r\n    -webkit-box-align: center;\r\n    -ms-flex-align: center;\r\n    align-items: center;\r\n    width: 100%;\r\n    cursor: pointer;\r\n    color: #343945;\r\n    font-weight: 400;\r\n    text-transform: capitalize;\r\n    font-size: 13px;\r\n}\r\n\r\n#upload {\r\n    display: inline-block;\r\n    position: absolute;\r\n    z-index: 1;\r\n    width: 100%;\r\n    height: 100%;\r\n    top: 0;\r\n    left: 0;\r\n    opacity: 0;\r\n    cursor: pointer;\r\n}\r\n\r\n.send-btns .attach .form-control {\r\n    display: inline-block;\r\n    width: 120px;\r\n    height: auto;\r\n    padding: 5px 8px;\r\n    font-size: 13px;\r\n    font-weight: 400;\r\n    line-height: 1.5;\r\n    color: #343945;\r\n    background-color: #F6F7FA;\r\n    background-clip: padding-box;\r\n    border: 1px solid #F6F7FA;\r\n    border-radius: 3px;\r\n    margin-bottom: 5px;\r\n}\r\n\r\n.send-btns .button-wrapper span.label img {\r\n    margin-right: 5px;\r\n}\r\n\r\n.button-wrapper {\r\n    position: relative;\r\n    width: 100px;\r\n    height: 100px;\r\n    text-align: center;\r\n    margin: 0 auto;\r\n}\r\n\r\nbutton:focus {\r\n    outline: 0;\r\n}\r\n\r\n.add-apoint {\r\n    display: inline-block;\r\n    margin-left: 5px;\r\n}\r\n\r\n.add-apoint a {\r\n    text-decoration: none;\r\n    background: #F6F7FA;\r\n    border-radius: 8px;\r\n    padding: 8px 8px;\r\n    font-size: 13px;\r\n    font-weight: 400;\r\n    line-height: 1.2;\r\n    color: #343945;\r\n}\r\n\r\n.add-apoint a svg {\r\n    margin-right: 5px;\r\n}\r\n\r\n.chat-icon {\r\n    display: none;\r\n}\r\n\r\n.closess i {\r\n    display: none;\r\n}\r\n\r\n\r\n\r\n@media (max-width: 767px) {\r\n    .chat-icon {\r\n        display: block;\r\n        margin-right: 5px;\r\n    }\r\n    .chatlist {\r\n        width: 0%;\r\n    }\r\n    .chatbox {\r\n        width: 100%;\r\n        position: static;\r\n        left: 1000px;\r\n        right: 0;\r\n        background: #fff;\r\n        transition: all 0.5s ease;\r\n        border-left: none;\r\n    }\r\n    .showbox {\r\n        left: 0 !important;\r\n        transition: all 0.5s ease;\r\n    }\r\n    .msg-head h3 {\r\n        text-transform: capitalize;\r\n        font-size: 14px;\r\n    }\r\n    .msg-head p {\r\n        font-size: 12px;\r\n    }\r\n    .msg-head .flex-shrink-0 img {\r\n        height: 30px;\r\n    }\r\n    .send-box button {\r\n        width: 28%;\r\n    }\r\n    .send-box .form-control {\r\n        width: 70%;\r\n    }\r\n    .chat-list h3 {\r\n        font-size: 14px;\r\n    }\r\n    .chat-list p {\r\n        font-size: 12px;\r\n    }\r\n    .msg-body ul li.sender p {\r\n        font-size: 13px;\r\n        padding: 8px;\r\n        border-bottom-left-radius: 6px;\r\n        border-top-right-radius: 6px;\r\n        border-bottom-right-radius: 6px;\r\n    }\r\n    .msg-body ul li.repaly p {\r\n        font-size: 13px;\r\n        padding: 8px;\r\n        border-top-left-radius: 6px;\r\n        border-top-right-radius: 6px;\r\n        border-bottom-left-radius: 6px;\r\n    }\r\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 

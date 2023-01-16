@@ -49,13 +49,11 @@ class HomeController extends Controller
     public function chat_end(Request $request)
     {
        try {
-        $visitor = Visitor::where('visitor_id',$request->visitor_id)->select("id")->first();
-        $operator = User::where('operator_id',$request->operator_id)->select("id","assigned_visitors")->first();
-        $operator->assigned_visitors --;
-        $operator->save();
-        $message = Message::where('operator_id',$operator->id)->where('visitor_id',$visitor->id)->whereNull('messages')->latest()->first();
-        // $message->operator_id = $operator->id;
-        // $message->visitor_id = $visitor->id;
+        // return $request->all();
+        $message = new Visitor();
+        $message->visitor_id = $request->visitor_id;
+        $message->operator_id = $request->operator_id;
+        $message->status = 1;
         $message->messages = json_encode($request->messages);
         $message->save();
 

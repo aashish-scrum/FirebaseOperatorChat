@@ -17,7 +17,7 @@ class CreateVisitorsTable extends Migration
             $table->id();
             $table->string('visitor_id');
             $table->string('operator_id')->nullable();
-            $table->string('ip');
+            $table->string('ip')->nullable();
             $table->string('name')->nullable();
             $table->string('email')->nullable();
             $table->string('phone')->nullable();

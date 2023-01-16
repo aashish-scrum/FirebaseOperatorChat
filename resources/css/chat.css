@@ -365,8 +365,8 @@ a.add img {
     text-decoration: none;
 }
 .chat-list a.selected-user{
-    background-color: #a23dff;
-    border-radius: 10px;
+    background-color: #a23dffbf;
+    border-radius: 5px;
 }
 .chat-list a.selected-user h3{
     color: #f6f6f6;
