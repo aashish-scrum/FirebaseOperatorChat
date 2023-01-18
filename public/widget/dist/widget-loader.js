@@ -1,10 +1,11 @@
 // Self invoking function
 (function(w, d, link, script, p) {
     window.onload = function() {
+      let sitelink = 'http://192.168.2.116:8000';
       // Load css
-      var css = "http://192.168.2.116:8000/widget/dist/assets/index.2481e91f.css";
+      var css = sitelink+"/widget/dist/assets/index.2481e91f.css";
       // Load js
-      var js = "http://192.168.2.116:8000/widget/dist/assets/index.6c53470d.js";
+      var js = sitelink+"/widget/dist/assets/index.6c53470d.js";
   
       link = d.createElement("link");
       link.rel = "stylesheet";
