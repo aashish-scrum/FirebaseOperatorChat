@@ -29,6 +29,12 @@
     font-weight: 600;
     border-radius: 5px;
 }
+.chat-list a.visitor-active{
+    border-left: 5px solid #069831;
+}
+.chat-list a.visitor-closed{
+    border-left: 5px solid #ff3c3c;
+}
 </style>
 <template>
     <div class="chat-area border">
@@ -46,7 +52,11 @@
                             <div class="chat-list">
                                 <template v-for="visitor in state.activeVisits">
                                     <a href="javascript:void(0)" class="d-flex align-items-center px-3 py-2"
-                                        v-bind:class="(visitor.visitor_id == state.currentVisitor.visitor_id) ? 'selected-user' : ''"
+                                        :class="{
+                                            'selected-user': (visitor.visitor_id == state.currentVisitor.visitor_id) ? true : false,
+                                            'visitor-active' : (visitor.type == 'active') ? true : false,
+                                            'visitor-closed' : (visitor.type == 'closedbyvisitor') ? true : false,
+                                        }"
                                         @click="fetchMessages(visitor)">
                                         <div class="flex-shrink-0">
                                             <div class="visitor-avatar">V</div>
@@ -104,13 +114,17 @@
                                 <template v-for="message in state.messages" :key="message.key">
                                     <li class="sender" v-if="message.sender == state.currentVisitor.visitor_id">
                                         <p> {{ message.message }} </p>
-                                        <span class="time">{{ new Date(message.timestamp).toLocaleString(undefined, { hour12: true, hour: 'numeric', minute: '2-digit', second: '2-digit',}) }} </span>
+                                        <span class="time">{{ new Date(message.timestamp).toLocaleString(undefined, { hour12: true, hour: 'numeric', minute: '2-digit', second: '2-digit'}) }} </span>
                                     </li>
                                     <li class="repaly" v-else-if="message.sender == operator.operator_id">
                                         <p> {{ message.message }} </p>
-                                        <span class="time">{{ new Date(message.timestamp).toLocaleString(undefined, { hour12: true, hour: 'numeric', minute: '2-digit', second: '2-digit', }) }} {{ (message.read == 1) ? 'read' : 'unread' }}</span>
+                                        <span class="time">{{ new Date(message.timestamp).toLocaleString(undefined, { hour12: true, hour: 'numeric', minute: '2-digit', second: '2-digit'}) }} {{ (message.read == 1) ? 'read' : 'unread' }}</span>
                                     </li>
                                 </template>
+                                <li v-if="state.currentVisitor.type == 'closedbyvisitor'" style="border-left: 5px solid #54e1ff; background-color: #54e1ff30; padding: 5px 15px; border-radius: 7px; display: flex; justify-content: space-between; align-items: center;" >
+                                    <p style="font-size: 12px; font-weight: 600;">Visitor has ended the chat.</p>
+                                    <span class="time">{{ new Date(state.currentVisitor.timestamp).toLocaleString(undefined, { hour12: true, hour: 'numeric', minute: '2-digit', second: '2-digit' }) }}</span>
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -180,7 +194,6 @@ export default {
                 read : 1,
                 timestamp : visitor.timestamp,
             };
-            console.log(chatRoom);
             visitor.receiver = operator.value.operator_id;
             db.collection("chat_room").add(chatRoom)
             .then((docRef) => {
@@ -201,7 +214,8 @@ export default {
         const SendMessage = () => {
             const messagesRef = db.collection('chat_room').doc(state.currentVisitor.chat_room_id).collection('messages');
 
-            if (inputMessage.value === "" || inputMessage.value === null) {
+            if (inputMessage.value.trim().length == 0) {
+                inputMessage.value = "";
                 return;
             }
 
@@ -221,13 +235,6 @@ export default {
 
         const scrollBottom = () => {
             if (state.messages.length > 1 && state.operator != '') {
-                // state.messages.forEach(row => {
-                //     if (row.read == 0 && row.sender == state.visitor) {
-                //         db.database().ref("messages/" + row.id).update({
-                //             read: 1,
-                //         });
-                //     }
-                // });
                 let el = hasScrolledToBottom.value;
                 el.scrollTop = el.scrollHeight;
             }
@@ -235,11 +242,12 @@ export default {
 
         const fetchMessages = (visitor) => {
             state.currentVisitor = visitor;
-            db.collection('chat_room').doc(visitor.chat_room_id)
-                .collection('messages').orderBy("timestamp").onSnapshot((querySnapshot) => {
+            db.collection('chat_room').doc(state.currentVisitor.chat_room_id)
+                .collection('messages').orderBy("timestamp")
+                .onSnapshot((querySnapshot) => {
                     let messages = [];
-                    querySnapshot.forEach((doc) => {
-                        messages.push(doc.data());
+                    querySnapshot.forEach((messageDoc) => {
+                        messages.push(messageDoc.data());
                     });
                     state.messages = messages;
             });
@@ -258,46 +266,47 @@ export default {
                     docData.doc_id = doc.id;
                     if(docData.type == 'pending')
                         pendingVisits.push(docData);
-                    if(docData.type == 'active' && docData.operator_id == operator.value.operator_id)
+                    // if(docData.type == 'active' && docData.operator_id == operator.value.operator_id)
+                    if(docData.type != 'pending')
                         activeVisits.push(docData);
-                    if(docData.type == 'closed' && docData.operator_id == operator.value.operator_id)
-                        endVisits.push(docData);
+                    // if(docData.type == 'closed' && docData.operator_id == operator.value.operator_id)
+                        // endVisits.push(docData);
                     // console.log(doc.id + '=>' , doc.data());
                 });
                 state.pendingVisits = pendingVisits;
                 state.activeVisits = activeVisits;
-                state.endVisits = endVisits;
-                if(state.endVisits.length > 0){
-                    endChat();
-                }
+                // state.endVisits = endVisits;
             });
         }
 
         const saveChat = (element) => {
             db.collection('chat_room').doc(element.chat_room_id)
-                .collection('messages').orderBy("timestamp").get().then((querySnapshot) => {
-                    let messages = [];
-                    querySnapshot.forEach((doc) => {
-                        messages.push(doc.data());
-                        db.collection('chat_room').doc(element.chat_room_id)
-                        .collection('messages').doc(doc.id).delete();
-                    });
-                    let data = {
-                        visitor_id : element.visitor_id,
-                        operator_id : element.operator_id,
-                        messages : messages
-                    }
-                    axios.post('/visitor/chat-end', data);
-                    db.collection('chat_room').doc(element.chat_room_id).delete();
-                    db.collection('visitors').doc(element.visitor_id).delete();
-                    state.currentVisitor = '';
-                    document.querySelector('#chatBox').classList.add('d-none');
+            .collection('messages').orderBy("timestamp").get().then((querySnapshot) => {
+                let messages = [];
+                querySnapshot.forEach((doc) => {
+                    messages.push(doc.data());
+                    db.collection('chat_room').doc(element.chat_room_id)
+                    .collection('messages').doc(doc.id).delete();
                 });
-        }
-
-        const endChat = () => {
-            state.endVisits.forEach(element => {
-                saveChat(element);
+                let data = {
+                    visitor_id : element.visitor_id,
+                    operator_id : element.operator_id,
+                    messages : messages
+                }
+                axios.post('/visitor/chat-end', data);
+                let updateClosed = 'closedbyoperator';
+                if(element.type == 'closedbyvisitor'){
+                    updateClosed = 'closedbyvisitor';
+                }
+                db.collection('visitors').doc(element.visitor_id).update({type: updateClosed,'messages' : JSON.stringify(messages)})
+                .then(()=>{
+                    setTimeout(() => {
+                        db.collection('visitors').doc(element.visitor_id).delete();
+                    }, 5000);
+                });
+                db.collection('chat_room').doc(element.chat_room_id).delete();
+                state.currentVisitor = '';
+                document.querySelector('#chatBox').classList.add('d-none');
             });
         }
 
@@ -319,7 +328,6 @@ export default {
             inputMessage,
             SendMessage,
             fetchMessages,
-            endChat,
             Logout,
             scrollBottom,
             hasScrolledToBottom

@@ -24,7 +24,7 @@
 
 @section('script')
     <!--Start of Tawk.to Script-->
-    <script type="text/javascript">
+    {{-- <script type="text/javascript">
         var Tawk_API = Tawk_API || {},
             Tawk_LoadStart = new Date();
         (function() {
@@ -36,6 +36,13 @@
             s1.setAttribute('crossorigin', '*');
             s0.parentNode.insertBefore(s1, s0);
         })();
-    </script>
+    </script> --}}
     <!--End of Tawk.to Script-->
+    <script>
+        var js = document.createElement("script");
+        js.async = true;
+        // Path to the script that loads the widget
+        js.src = "http://192.168.2.116:8000/widget/dist/widget-loader.js"; // This is where the app is currently hosted
+        document.getElementsByTagName("head")[0].appendChild(js);
+      </script>
 @endsection

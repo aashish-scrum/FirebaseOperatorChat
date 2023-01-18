@@ -363,10 +363,11 @@ a.add img {
     margin: 0px 2px 2px 2px;
     position: relative;
     text-decoration: none;
+    border-radius: 5px;
+    border: 1px solid #b7b7b76b;
 }
 .chat-list a.selected-user{
     background-color: #a23dffbf;
-    border-radius: 5px;
 }
 .chat-list a.selected-user h3{
     color: #f6f6f6;
