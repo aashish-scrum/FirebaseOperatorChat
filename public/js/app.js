@@ -46569,7 +46569,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         sender: operator.value.operator_id,
         receiver: state.currentVisitor.visitor_id,
         message: inputMessage.value,
-        read: 1,
+        read: 0,
         timestamp: Date.now()
       };
       messagesRef.add(message);
@@ -46578,7 +46578,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       inputMessage.value = "";
     };
     var scrollBottom = function scrollBottom() {
-      if (state.messages.length > 1 && state.operator != '') {
+      if (state.messages.length > 1 && state.operator != '' && state.currentVisitor != '') {
+        _db__WEBPACK_IMPORTED_MODULE_1__["default"].collection("chat_room").doc(state.currentVisitor.chat_room_id).collection('messages').where("read", "==", 0).where("sender", "==", state.currentVisitor.visitor_id).onSnapshot(function (querySnapshot) {
+          querySnapshot.forEach(function (doc) {
+            _db__WEBPACK_IMPORTED_MODULE_1__["default"].collection("chat_room").doc(state.currentVisitor.chat_room_id).collection('messages').doc(doc.id).update({
+              read: 1
+            });
+          });
+        });
         var el = hasScrolledToBottom.value;
         el.scrollTop = el.scrollHeight;
       }
@@ -46594,6 +46601,17 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       });
       document.querySelector('#chatBox').classList.remove('d-none');
     };
+    var countUnread = function countUnread() {
+      state.activeVisits.forEach(function (visitor, key) {
+        if (state.currentVisitor.visitor_id != visitor.visitor_id) {
+          _db__WEBPACK_IMPORTED_MODULE_1__["default"].collection("chat_room").doc(visitor.chat_room_id).collection('messages').where("read", "==", 0).where("sender", "==", visitor.visitor_id).onSnapshot(function (querySnapshot) {
+            state.activeVisits[key].unreadCounts = querySnapshot.size;
+            newMessageSound.play();
+            newMessageSound.currentTime = 0;
+          });
+        }
+      });
+    };
     var fetchUsers = /*#__PURE__*/function () {
       var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
         return _regeneratorRuntime().wrap(function _callee$(_context) {
@@ -46603,22 +46621,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 _db__WEBPACK_IMPORTED_MODULE_1__["default"].collection("visitors").onSnapshot(function (querySnapshot) {
                   var pendingVisits = [];
                   var activeVisits = [];
-                  var endVisits = [];
                   var docData;
                   querySnapshot.forEach(function (doc) {
                     docData = doc.data();
                     docData.doc_id = doc.id;
                     if (docData.type == 'pending') pendingVisits.push(docData);
-                    // if(docData.type == 'active' && docData.operator_id == operator.value.operator_id)
                     if (docData.type != 'pending') activeVisits.push(docData);
-                    // if(docData.type == 'closed' && docData.operator_id == operator.value.operator_id)
-                    // endVisits.push(docData);
-                    // console.log(doc.id + '=>' , doc.data());
                   });
-
                   state.pendingVisits = pendingVisits;
                   state.activeVisits = activeVisits;
-                  // state.endVisits = endVisits;
+                  countUnread();
                 });
               case 1:
               case "end":
@@ -46662,6 +46674,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       });
     };
     (0,vue__WEBPACK_IMPORTED_MODULE_0__.onMounted)(function () {
+      countUnread();
       fetchUsers();
     });
     (0,vue__WEBPACK_IMPORTED_MODULE_0__.onUpdated)(function () {
@@ -46740,66 +46753,75 @@ var _hoisted_12 = {
   "class": "flex-grow-1 ms-3"
 };
 var _hoisted_13 = {
-  "class": "chatbox"
+  key: 0,
+  "class": "badge text-bg-danger unread-badge",
+  style: {
+    "position": "absolute",
+    "right": "3%",
+    "top": "25%"
+  }
 };
 var _hoisted_14 = {
-  "class": "modal-dialog-scrollable"
+  "class": "chatbox"
 };
 var _hoisted_15 = {
-  "class": "modal-content"
+  "class": "modal-dialog-scrollable"
 };
 var _hoisted_16 = {
+  "class": "modal-content"
+};
+var _hoisted_17 = {
   key: 0,
   "class": "msg-head"
 };
-var _hoisted_17 = {
+var _hoisted_18 = {
   "class": "row"
 };
-var _hoisted_18 = {
+var _hoisted_19 = {
   "class": "col-md-8"
 };
-var _hoisted_19 = {
+var _hoisted_20 = {
   "class": "d-flex align-items-center ms-3"
 };
-var _hoisted_20 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+var _hoisted_21 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
   "class": "visitor-avatar"
 }, "V", -1 /* HOISTED */);
-var _hoisted_21 = {
+var _hoisted_22 = {
   "class": "col-md-4"
 };
-var _hoisted_22 = {
+var _hoisted_23 = {
   "class": "d-flex justify-content-end"
 };
-var _hoisted_23 = {
+var _hoisted_24 = {
   "class": "scrollable modal-body",
   ref: "hasScrolledToBottom"
 };
-var _hoisted_24 = {
+var _hoisted_25 = {
   "class": "msg-body p-3"
 };
-var _hoisted_25 = {
+var _hoisted_26 = {
   "class": "table table-responsive caption-top table-striped border"
 };
-var _hoisted_26 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("caption", null, "List of users", -1 /* HOISTED */);
-var _hoisted_27 = ["onClick"];
-var _hoisted_28 = {
+var _hoisted_27 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("caption", null, "List of users", -1 /* HOISTED */);
+var _hoisted_28 = ["onClick"];
+var _hoisted_29 = {
   "class": ""
 };
-var _hoisted_29 = {
+var _hoisted_30 = {
   key: 0,
   "class": "sender"
 };
-var _hoisted_30 = {
+var _hoisted_31 = {
   "class": "time"
 };
-var _hoisted_31 = {
+var _hoisted_32 = {
   key: 1,
   "class": "repaly"
 };
-var _hoisted_32 = {
+var _hoisted_33 = {
   "class": "time"
 };
-var _hoisted_33 = {
+var _hoisted_34 = {
   key: 0,
   style: {
     "border-left": "5px solid #54e1ff",
@@ -46811,20 +46833,20 @@ var _hoisted_33 = {
     "align-items": "center"
   }
 };
-var _hoisted_34 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", {
+var _hoisted_35 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", {
   style: {
     "font-size": "12px",
     "font-weight": "600"
   }
 }, "Visitor has ended the chat.", -1 /* HOISTED */);
-var _hoisted_35 = {
+var _hoisted_36 = {
   "class": "time"
 };
-var _hoisted_36 = {
+var _hoisted_37 = {
   "class": "send-box position-relative d-none",
   id: "chatBox"
 };
-var _hoisted_37 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+var _hoisted_38 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
   type: "submit",
   id: "btn-chat"
 }, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
@@ -46848,8 +46870,8 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       onClick: function onClick($event) {
         return $setup.fetchMessages(visitor);
       }
-    }, [_hoisted_11, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_12, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h3", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(visitor.visitor_id), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <p>{{ visitor.email }}</p> ")]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <span class=\"badge text-bg-danger unread-badge\" style=\"position: absolute;right: 3%;top: 25%;\"\r\n                                            v-if=\"visitor.messages_count > 0\">{{ visitor.messages_count }}</span> ")], 10 /* CLASS, PROPS */, _hoisted_10);
-  }), 256 /* UNKEYED_FRAGMENT */))])])])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" chatbox "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_13, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_14, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_15, [$setup.state.currentVisitor != '' ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_16, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_17, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_18, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_19, [_hoisted_20, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($setup.state.currentVisitor.visitor_id), 1 /* TEXT */)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_21, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_22, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    }, [_hoisted_11, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_12, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h3", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(visitor.visitor_id), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <p>{{ visitor.email }}</p> ")]), visitor.unreadCounts > 0 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_13, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(visitor.unreadCounts), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)], 10 /* CLASS, PROPS */, _hoisted_10);
+  }), 256 /* UNKEYED_FRAGMENT */))])])])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" chatbox "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_14, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_15, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_16, [$setup.state.currentVisitor != '' ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_17, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_18, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_19, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_20, [_hoisted_21, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($setup.state.currentVisitor.visitor_id), 1 /* TEXT */)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_22, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_23, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     type: "button",
     "class": "btn btn-primary",
     onClick: _cache[1] || (_cache[1] = function ($event) {
@@ -46860,7 +46882,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       "--bs-btn-padding-x": ".5rem",
       "--bs-btn-font-size": ".75rem"
     }
-  }, "End Chat")])])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_23, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_24, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("table", _hoisted_25, [_hoisted_26, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tbody", null, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($setup.state.pendingVisits, function (pending) {
+  }, "End Chat")])])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_24, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_25, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("table", _hoisted_26, [_hoisted_27, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tbody", null, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($setup.state.pendingVisits, function (pending) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("tr", {
       key: pending.key
     }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(pending.visitor_id), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(pending.message), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(pending.timestamp), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", {
@@ -46869,27 +46891,27 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       onClick: function onClick($event) {
         return $setup.joinChat(pending);
       }
-    }, "Join Chat", 8 /* PROPS */, _hoisted_27)])]);
-  }), 128 /* KEYED_FRAGMENT */))])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("ul", _hoisted_28, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($setup.state.messages, function (message) {
+    }, "Join Chat", 8 /* PROPS */, _hoisted_28)])]);
+  }), 128 /* KEYED_FRAGMENT */))])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("ul", _hoisted_29, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($setup.state.messages, function (message) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
       key: message.key
-    }, [message.sender == $setup.state.currentVisitor.visitor_id ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("li", _hoisted_29, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(message.message), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_30, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(new Date(message.timestamp).toLocaleString(undefined, {
+    }, [message.sender == $setup.state.currentVisitor.visitor_id ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("li", _hoisted_30, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(message.message), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_31, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(new Date(message.timestamp).toLocaleString(undefined, {
       hour12: true,
       hour: 'numeric',
       minute: '2-digit',
       second: '2-digit'
-    })), 1 /* TEXT */)])) : message.sender == $setup.operator.operator_id ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("li", _hoisted_31, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(message.message), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_32, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(new Date(message.timestamp).toLocaleString(undefined, {
+    })), 1 /* TEXT */)])) : message.sender == $setup.operator.operator_id ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("li", _hoisted_32, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(message.message), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_33, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(new Date(message.timestamp).toLocaleString(undefined, {
       hour12: true,
       hour: 'numeric',
       minute: '2-digit',
       second: '2-digit'
     })) + " " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(message.read == 1 ? 'read' : 'unread'), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)], 64 /* STABLE_FRAGMENT */);
-  }), 128 /* KEYED_FRAGMENT */)), $setup.state.currentVisitor.type == 'closedbyvisitor' ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("li", _hoisted_33, [_hoisted_34, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_35, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(new Date($setup.state.currentVisitor.timestamp).toLocaleString(undefined, {
+  }), 128 /* KEYED_FRAGMENT */)), $setup.state.currentVisitor.type == 'closedbyvisitor' ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("li", _hoisted_34, [_hoisted_35, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_36, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(new Date($setup.state.currentVisitor.timestamp).toLocaleString(undefined, {
     hour12: true,
     hour: 'numeric',
     minute: '2-digit',
     second: '2-digit'
-  })), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])])], 512 /* NEED_PATCH */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_36, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("form", {
+  })), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])])], 512 /* NEED_PATCH */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_37, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("form", {
     action: "javascript:void(0)",
     onSubmit: _cache[4] || (_cache[4] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function () {
       return $setup.SendMessage && $setup.SendMessage.apply($setup, arguments);
@@ -46905,7 +46927,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     onKeyup: _cache[3] || (_cache[3] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withKeys)(function () {
       return $setup.SendMessage && $setup.SendMessage.apply($setup, arguments);
     }, ["enter"]))
-  }, null, 544 /* HYDRATE_EVENTS, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $setup.inputMessage]]), _hoisted_37], 32 /* HYDRATE_EVENTS */)])])])])]);
+  }, null, 544 /* HYDRATE_EVENTS, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $setup.inputMessage]]), _hoisted_38], 32 /* HYDRATE_EVENTS */)])])])])]);
 }
 
 /***/ }),

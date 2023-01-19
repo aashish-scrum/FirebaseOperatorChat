@@ -66,8 +66,7 @@
                                             <h3>{{ visitor.visitor_id }}</h3>
                                             <!-- <p>{{ visitor.email }}</p> -->
                                         </div>
-                                        <!-- <span class="badge text-bg-danger unread-badge" style="position: absolute;right: 3%;top: 25%;"
-                                            v-if="visitor.messages_count > 0">{{ visitor.messages_count }}</span> -->
+                                        <span class="badge text-bg-danger unread-badge" v-if="visitor.unreadCounts > 0"  style="position: absolute;right: 3%;top: 25%;" >{{ visitor.unreadCounts }}</span>
                                     </a>
                                 </template>
                             </div>
@@ -223,7 +222,7 @@ export default {
                 sender: operator.value.operator_id,
                 receiver: state.currentVisitor.visitor_id,
                 message: inputMessage.value,
-                read: 1,
+                read: 0,
                 timestamp: Date.now()
             }
 
@@ -234,7 +233,14 @@ export default {
         }
 
         const scrollBottom = () => {
-            if (state.messages.length > 1 && state.operator != '') {
+            if (state.messages.length > 1 && state.operator != '' && state.currentVisitor != '') {
+                db.collection("chat_room").doc(state.currentVisitor.chat_room_id)
+                .collection('messages').where("read", "==", 0).where("sender", "==", state.currentVisitor.visitor_id)
+                .onSnapshot((querySnapshot) => {
+                    querySnapshot.forEach((doc) => {
+                        db.collection("chat_room").doc(state.currentVisitor.chat_room_id).collection('messages').doc(doc.id).update({read:1});
+                    });
+                });
                 let el = hasScrolledToBottom.value;
                 el.scrollTop = el.scrollHeight;
             }
@@ -254,28 +260,37 @@ export default {
             document.querySelector('#chatBox').classList.remove('d-none');
         }
 
+        const countUnread = () => {
+            state.activeVisits.forEach((visitor,key)=>{
+                if(state.currentVisitor.visitor_id != visitor.visitor_id){
+                    db.collection("chat_room").doc(visitor.chat_room_id).collection('messages')
+                    .where("read", "==", 0).where("sender", "==", visitor.visitor_id)
+                    .onSnapshot((querySnapshot) => {
+                        state.activeVisits[key].unreadCounts = querySnapshot.size;
+                        newMessageSound.play();
+                        newMessageSound.currentTime = 0;
+                    });
+                }
+            });
+        }
+
         const fetchUsers = async () => {
             db.collection("visitors")
             .onSnapshot((querySnapshot) => {
                 let pendingVisits = [];
                 let activeVisits = [];
-                let endVisits = [];
                 let docData;
                 querySnapshot.forEach((doc) => {
                     docData = doc.data();
                     docData.doc_id = doc.id;
                     if(docData.type == 'pending')
                         pendingVisits.push(docData);
-                    // if(docData.type == 'active' && docData.operator_id == operator.value.operator_id)
                     if(docData.type != 'pending')
                         activeVisits.push(docData);
-                    // if(docData.type == 'closed' && docData.operator_id == operator.value.operator_id)
-                        // endVisits.push(docData);
-                    // console.log(doc.id + '=>' , doc.data());
                 });
                 state.pendingVisits = pendingVisits;
                 state.activeVisits = activeVisits;
-                // state.endVisits = endVisits;
+                countUnread();
             });
         }
 
@@ -311,6 +326,7 @@ export default {
         }
 
         onMounted(() => {
+            countUnread();
             fetchUsers();
         });
 
