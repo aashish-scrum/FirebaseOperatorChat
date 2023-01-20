@@ -232,7 +232,7 @@ export default {
             inputMessage.value = "";
         }
 
-        const scrollBottom = () => {
+        const scrollBottom = async () => {
             if (state.messages.length > 1 && state.operator != '' && state.currentVisitor != '') {
                 db.collection("chat_room").doc(state.currentVisitor.chat_room_id)
                 .collection('messages').where("read", "==", 0).where("sender", "==", state.currentVisitor.visitor_id)
@@ -267,8 +267,10 @@ export default {
                     .where("read", "==", 0).where("sender", "==", visitor.visitor_id)
                     .onSnapshot((querySnapshot) => {
                         state.activeVisits[key].unreadCounts = querySnapshot.size;
-                        newMessageSound.play();
-                        newMessageSound.currentTime = 0;
+                        if(querySnapshot.size > 0 && state.currentVisitor.visitor_id != visitor.visitor_id){
+                            newMessageSound.play();
+                            newMessageSound.currentTime = 0;
+                        }
                     });
                 }
             });
@@ -290,7 +292,6 @@ export default {
                 });
                 state.pendingVisits = pendingVisits;
                 state.activeVisits = activeVisits;
-                countUnread();
             });
         }
 
@@ -326,12 +327,14 @@ export default {
         }
 
         onMounted(() => {
-            countUnread();
+            // countUnread();
             fetchUsers();
         });
 
         onUpdated(() => {
-            scrollBottom();
+            scrollBottom().then(()=>{
+                countUnread();
+            });
         })
         
         return {

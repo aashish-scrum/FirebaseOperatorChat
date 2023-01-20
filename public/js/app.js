@@ -46577,19 +46577,35 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       sendMessageSound.currentTime = 0;
       inputMessage.value = "";
     };
-    var scrollBottom = function scrollBottom() {
-      if (state.messages.length > 1 && state.operator != '' && state.currentVisitor != '') {
-        _db__WEBPACK_IMPORTED_MODULE_1__["default"].collection("chat_room").doc(state.currentVisitor.chat_room_id).collection('messages').where("read", "==", 0).where("sender", "==", state.currentVisitor.visitor_id).onSnapshot(function (querySnapshot) {
-          querySnapshot.forEach(function (doc) {
-            _db__WEBPACK_IMPORTED_MODULE_1__["default"].collection("chat_room").doc(state.currentVisitor.chat_room_id).collection('messages').doc(doc.id).update({
-              read: 1
-            });
-          });
-        });
-        var el = hasScrolledToBottom.value;
-        el.scrollTop = el.scrollHeight;
-      }
-    };
+    var scrollBottom = /*#__PURE__*/function () {
+      var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
+        var el;
+        return _regeneratorRuntime().wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                if (state.messages.length > 1 && state.operator != '' && state.currentVisitor != '') {
+                  _db__WEBPACK_IMPORTED_MODULE_1__["default"].collection("chat_room").doc(state.currentVisitor.chat_room_id).collection('messages').where("read", "==", 0).where("sender", "==", state.currentVisitor.visitor_id).onSnapshot(function (querySnapshot) {
+                    querySnapshot.forEach(function (doc) {
+                      _db__WEBPACK_IMPORTED_MODULE_1__["default"].collection("chat_room").doc(state.currentVisitor.chat_room_id).collection('messages').doc(doc.id).update({
+                        read: 1
+                      });
+                    });
+                  });
+                  el = hasScrolledToBottom.value;
+                  el.scrollTop = el.scrollHeight;
+                }
+              case 1:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee);
+      }));
+      return function scrollBottom() {
+        return _ref.apply(this, arguments);
+      };
+    }();
     var fetchMessages = function fetchMessages(visitor) {
       state.currentVisitor = visitor;
       _db__WEBPACK_IMPORTED_MODULE_1__["default"].collection('chat_room').doc(state.currentVisitor.chat_room_id).collection('messages').orderBy("timestamp").onSnapshot(function (querySnapshot) {
@@ -46606,17 +46622,19 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         if (state.currentVisitor.visitor_id != visitor.visitor_id) {
           _db__WEBPACK_IMPORTED_MODULE_1__["default"].collection("chat_room").doc(visitor.chat_room_id).collection('messages').where("read", "==", 0).where("sender", "==", visitor.visitor_id).onSnapshot(function (querySnapshot) {
             state.activeVisits[key].unreadCounts = querySnapshot.size;
-            newMessageSound.play();
-            newMessageSound.currentTime = 0;
+            if (querySnapshot.size > 0 && state.currentVisitor.visitor_id != visitor.visitor_id) {
+              newMessageSound.play();
+              newMessageSound.currentTime = 0;
+            }
           });
         }
       });
     };
     var fetchUsers = /*#__PURE__*/function () {
-      var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-        return _regeneratorRuntime().wrap(function _callee$(_context) {
+      var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+        return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) {
-            switch (_context.prev = _context.next) {
+            switch (_context2.prev = _context2.next) {
               case 0:
                 _db__WEBPACK_IMPORTED_MODULE_1__["default"].collection("visitors").onSnapshot(function (querySnapshot) {
                   var pendingVisits = [];
@@ -46630,17 +46648,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   });
                   state.pendingVisits = pendingVisits;
                   state.activeVisits = activeVisits;
-                  countUnread();
                 });
               case 1:
               case "end":
-                return _context.stop();
+                return _context2.stop();
             }
           }
-        }, _callee);
+        }, _callee2);
       }));
       return function fetchUsers() {
-        return _ref.apply(this, arguments);
+        return _ref2.apply(this, arguments);
       };
     }();
     var saveChat = function saveChat(element) {
@@ -46674,11 +46691,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       });
     };
     (0,vue__WEBPACK_IMPORTED_MODULE_0__.onMounted)(function () {
-      countUnread();
+      // countUnread();
       fetchUsers();
     });
     (0,vue__WEBPACK_IMPORTED_MODULE_0__.onUpdated)(function () {
-      scrollBottom();
+      scrollBottom().then(function () {
+        countUnread();
+      });
     });
     return {
       inputUsername: inputUsername,
