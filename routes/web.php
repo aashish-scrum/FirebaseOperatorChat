@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,9 +17,12 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Auth::routes();
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth'])->name('dashboard');
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+require __DIR__.'/auth.php';
+
 Route::get('/chats', [App\Http\Controllers\HomeController::class, 'chat'])->name('chat');
 Route::get('/chat/visitors', [App\Http\Controllers\VisitorController::class, 'visitors'])->name('visitors');
 Route::get('/chat/operator/status/{operator_id}/{status}', [App\Http\Controllers\HomeController::class, 'operator_status'])->name('visitors');

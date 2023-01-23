@@ -1,6 +1,4 @@
 <style>
-@import '../../css/chat.css';
-
 .v3-emoji-picker {
     position: absolute;
     text-align: left;
@@ -149,8 +147,6 @@
 <script>
 import { reactive, inject, ref, onMounted, onUpdated } from 'vue';
 import db from '../db';
-import "bootstrap/dist/js/bootstrap.min.js";
-
 export default {
     props: ['user'],
     setup(props) {

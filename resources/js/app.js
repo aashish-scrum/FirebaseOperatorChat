@@ -1,4 +1,6 @@
 require('./bootstrap');
+require('alpinejs');
+
 import { createApp } from 'vue';
 
 import chat from "./components/Chat.vue";
