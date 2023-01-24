@@ -40,6 +40,7 @@ class RegisteredUserController extends Controller
         ]);
 
         $user = User::create([
+            'operator_id' => str_replace(' ','_',strtolower($request->name)).rand(10000,99999).now()->timestamp,
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),

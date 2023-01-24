@@ -19,11 +19,20 @@
 
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <script src="{{ asset('js/app.js') }}" defer></script>
+    <style>
+        @media (min-width : 990px) {
+            .layout-wrapper {
+                margin-left: 80px;
+                max-height: 100vh;
+                overflow-y: auto;
+            }
+        }
+    </style>
 </head>
 
 <body>
     @include('layouts.sidebar')
-    <div class="layout-wrapper" style="margin-left: 80px;max-height: 100vh;overflow-y:auto">
+    <div class="layout-wrapper" >
         <div class="container-fluid">
             <div class="row">
                 @yield('content')

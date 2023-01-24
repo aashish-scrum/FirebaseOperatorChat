@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="col-md-3">
+    <div class="col-lg-3">
         <div class="px-4 pt-4">
             <h4 class="mb-4">Chats</h4>
             <div class="search-box chat-search-box">
@@ -328,7 +328,7 @@
         </div>
         <!-- End chat-message-list -->
     </div>
-    <div class="col-md-9">
+    <div class="col-lg-9">
         <div class="user-chat w-100 overflow-hidden">
             <div class="d-lg-flex">
 

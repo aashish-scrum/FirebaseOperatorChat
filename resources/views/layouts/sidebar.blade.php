@@ -44,8 +44,10 @@
                     <a class="dropdown-item" href="#">Setting <i
                             class="ri-settings-3-line float-end text-muted"></i></a>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#">Log out <i
-                            class="ri-logout-circle-r-line float-end text-muted"></i></a>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <a class="dropdown-item" href="{{route('logout')}}" onclick="event.preventDefault(); this.closest('form').submit();">Log out <i class="ri-logout-circle-r-line float-end text-muted"></i></a>
+                    </form>
                 </div>
             </li>
         </ul>
@@ -72,8 +74,10 @@
                     <a class="dropdown-item" href="#">Setting <i
                             class="ri-settings-3-line float-end text-muted"></i></a>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="auth-login.html">Log out <i
-                            class="ri-logout-circle-r-line float-end text-muted"></i></a>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault(); this.closest('form').submit();">Log out <i class="ri-logout-circle-r-line float-end text-muted"></i></a>
+                    </form>
                 </div>
             </li>
         </ul>

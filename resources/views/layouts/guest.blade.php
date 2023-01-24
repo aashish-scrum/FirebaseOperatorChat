@@ -1,54 +1,29 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <!-- Fonts -->
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap">
+    <title>{{ config('app.name', 'Laravel') }}</title>
+    <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}">
 
-        <!-- Styles -->
-        <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <link rel="stylesheet" id="bootstrap-style" href="{{ asset('assets/css/bootstrap.min.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/css/icons.min.css') }}" />
+    <link rel="stylesheet" id="app-style" href="{{ asset('assets/css/app.min.css') }}" />
 
-        <style type="text/css" media="screen">
-            html,
-            body {
-                height: 100%;
-            }
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <script src="{{ asset('js/app.js') }}" defer></script>
+</head>
 
-            body {
-                display: flex;
-                align-items: center;
-            }
+<body>
+    {{ $slot }}
 
-            .form-signin {
-                width: 100%;
-                max-width: 450px;
-                margin: auto;
-            }
-            .form-signin .checkbox {
-                font-weight: 400;
-            }
-            .form-signin .form-control {
-                position: relative;
-                box-sizing: border-box;
-                height: auto;
-                font-size: 16px;
-            }
-            .form-signin .form-control:focus {
-                z-index: 2;
-            }
-        </style>
+    <script src="{{ asset('assets/libs/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/libs/node-waves/waves.min.js') }}"></script>
+    <script src="{{ asset('assets/libs/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('assets/js/app.js') }}"></script>
+</body>
 
-        <!-- Scripts -->
-        <script src="{{ asset('js/app.js') }}" defer></script>
-    </head>
-    <body>
-        <div class="form-signin">
-            {{ $slot }}
-        </div>
-    </body>
 </html>
