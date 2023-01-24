@@ -32,7 +32,7 @@
 
 <body>
     @include('layouts.sidebar')
-    <div class="layout-wrapper" >
+    <div class="layout-wrapper" id="app">
         <div class="container-fluid">
             <div class="row">
                 @yield('content')
