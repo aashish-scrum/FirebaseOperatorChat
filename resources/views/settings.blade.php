@@ -1,247 +1,206 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="col-8 mx-auto">
-    <div class="px-4 pt-4">
-        <h4 class="mb-0">Settings</h4>
-    </div>
-
-    <div class="text-center border-bottom p-4">
-        <div class="mb-4 profile-user">
-            <img src="assets/images/users/avatar-1.jpg" class="rounded-circle avatar-lg img-thumbnail"
-                alt="">
-            <button type="button"
-                class="btn btn-light bg-light avatar-xs p-0 rounded-circle profile-photo-edit">
-                <i class="ri-pencil-fill"></i>
-            </button>
-        </div>
-
-        <h5 class="font-size-16 mb-1 text-truncate">Patricia Smith</h5>
-        <div class="dropdown d-inline-block mb-1">
-            <a class="text-muted dropdown-toggle pb-1 d-block" href="#" role="button"
-                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Available <i class="mdi mdi-chevron-down"></i>
-            </a>
-
-            <div class="dropdown-menu">
-                <a class="dropdown-item" href="#">Available</a>
-                <a class="dropdown-item" href="#">Busy</a>
+    <div class="col-12 mx-auto">
+        <div class="px-4 pt-4">
+            <h4 class="mb-0">Settings</h4>
+            <div class="row mt-5 justify-content-lg-start">
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                                <button class="nav-link text-start active" id="v-pills-home-tab" data-bs-toggle="pill"
+                                    data-bs-target="#v-pills-home" type="button" role="tab"
+                                    aria-controls="v-pills-home" aria-selected="true">Property Members</button>
+                                <button class="nav-link text-start" id="v-pills-department-tab" data-bs-toggle="pill"
+                                    data-bs-target="#v-pills-department" type="button" role="tab"
+                                    aria-controls="v-pills-department" aria-selected="false">Departments</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <div class="tab-content" id="v-pills-tabContent">
+                        <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab" tabindex="0">
+                            <div class="d-flex justify-content-between">
+                                <h5>Property Members</h5>
+                                <div>
+                                    <button class="btn btn-success btn-sm ms-auto" data-bs-toggle="modal"
+                                        data-bs-target="#staticBackdrop">Invite Member</button>
+                                </div>
+                            </div>
+                            <div class="container">
+                                <div class="row py-4">
+                                    <div class="col-12">
+                                        <table id="" class="example table table-hover responsive nowrap"
+                                            style="width:100%">
+                                            <thead>
+                                                <tr>
+                                                    <th>Avatar</th>
+                                                    <th>Name</th>
+                                                    <th>Email</th>
+                                                    <th>Role</th>
+                                                    <th>App Access</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <a href="#">
+                                                            <div class="avatar-xs">
+                                                                <span
+                                                                    class="avatar-title rounded-circle bg-soft-primary text-primary">
+                                                                    V
+                                                                </span>
+                                                            </div>
+                                                        </a>
+                                                    </td>
+                                                    <td>Aashish</td>
+                                                    <td>Designer@gmail.com</td>
+                                                    <td>Designer</td>
+                                                    <td>
+                                                        <div class="badge badge-soft-success rounded-pill">Enabled</div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="v-pills-department" role="tabpanel" aria-labelledby="v-pills-department-tab" tabindex="0">
+                            <div class="d-flex justify-content-between">
+                                <h5>Departments</h5>
+                                <div>
+                                    <a href="{{route('department.add')}}" class="btn btn-primary btn-sm ms-auto" >Add Department</a>
+                                </div>
+                            </div>
+                            <div class="container">
+                                <div class="row py-4">
+                                    <div class="col-12">
+                                        <table id="" class="example table table-hover responsive nowrap"
+                                            style="width:100%">
+                                            <thead>
+                                                <tr>
+                                                    <th>Avatar</th>
+                                                    <th>Name</th>
+                                                    <th>Email</th>
+                                                    <th>Role</th>
+                                                    <th>App Access</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <a href="#">
+                                                            <div class="avatar-xs">
+                                                                <span
+                                                                    class="avatar-title rounded-circle bg-soft-primary text-primary">
+                                                                    V
+                                                                </span>
+                                                            </div>
+                                                        </a>
+                                                    </td>
+                                                    <td>Aashish</td>
+                                                    <td>Designer@gmail.com</td>
+                                                    <td>Designer</td>
+                                                    <td>
+                                                        <div class="badge badge-soft-success rounded-pill">Enabled</div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <!-- End profile user -->
-
-    <!-- Start User profile description -->
-    <div class="p-4 user-profile-desc" data-simplebar>
-        <div id="settingprofile" class="accordion">
-            <div class="accordion-item card border mb-2">
-                <div class="accordion-header" id="personalinfo1">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#personalinfo" aria-expanded="true"
-                        aria-controls="personalinfo">
-                        <h5 class="font-size-14 m-0">Personal Info</h5>
-                    </button>
-                </div>
-                <div id="personalinfo" class="accordion-collapse collapse show"
-                    aria-labelledby="personalinfo1" data-bs-parent="#settingprofile">
-                    <div class="accordion-body">
-                        <div class="float-end">
-                            <button type="button" class="btn btn-light btn-sm"><i
-                                    class="ri-edit-fill me-1 ms-0 align-middle"></i> Edit</button>
+    <form action="{{route('invite-members')}}" method="post">
+        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+            aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Invite Member</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        @csrf
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">Email</label>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Role</label>
+                            </div>
                         </div>
-
                         <div>
-                            <p class="text-muted mb-1">Name</p>
-                            <h5 class="font-size-14">Patricia Smith</h5>
-                        </div>
-
-                        <div class="mt-4">
-                            <p class="text-muted mb-1">Email</p>
-                            <h5 class="font-size-14">adc@123.com</h5>
-                        </div>
-
-                        <div class="mt-4">
-                            <p class="text-muted mb-1">Time</p>
-                            <h5 class="font-size-14">11:40 AM</h5>
-                        </div>
-
-                        <div class="mt-4">
-                            <p class="text-muted mb-1">Location</p>
-                            <h5 class="font-size-14 mb-0">California, USA</h5>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- end personal info card -->
-
-            <div class="accordion-item card border mb-2">
-                <div class="accordion-header" id="privacy1">
-                    <button class="accordion-button collapsed" type="button"
-                        data-bs-toggle="collapse" data-bs-target="#privacy" aria-expanded="false"
-                        aria-controls="privacy">
-                        <h5 class="font-size-14 m-0">Privacy</h5>
-                    </button>
-                </div>
-                <div id="privacy" class="accordion-collapse collapse" aria-labelledby="privacy1"
-                    data-bs-parent="#settingprofile">
-                    <div class="accordion-body">
-                        <div class="py-3">
-                            <div class="d-flex align-items-center">
-                                <div class="flex-grow-1 overflow-hidden">
-                                    <h5 class="font-size-13 mb-0 text-truncate">Profile photo</h5>
+                            <div class="row align-items-center mb-2">
+                                <div class="col">
+                                    <input type="email" name="email[]" class="form-control" placeholder="Enter Email" aria-label="Enter Email">
                                 </div>
-                                <div class="dropdown ms-2 me-0">
-                                    <button class="btn btn-light btn-sm dropdown-toggle w-sm"
-                                        type="button" data-bs-toggle="dropdown" aria-haspopup="true"
-                                        aria-expanded="false">
-                                        Everyone <i class="mdi mdi-chevron-down"></i>
-                                    </button>
-                                    <div class="dropdown-menu dropdown-menu-end">
-                                        <a class="dropdown-item" href="#">Everyone</a>
-                                        <a class="dropdown-item" href="#">selected</a>
-                                        <a class="dropdown-item" href="#">Nobody</a>
+                                <div class="col">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="role[]" id="flexRadioDefault1">
+                                        <label class="form-check-label" for="flexRadioDefault1">
+                                            Admin
+                                        </label>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="py-3 border-top">
-                            <div class="d-flex align-items-center">
-                                <div class="flex-grow-1 overflow-hidden">
-                                    <h5 class="font-size-13 mb-0 text-truncate">Last seen</h5>
-
-                                </div>
-                                <div class="ms-2 me-0">
-                                    <div class="form-check form-switch">
-                                        <input type="checkbox" class="form-check-input"
-                                            id="privacy-lastseenSwitch" checked>
-                                        <label class="form-check-label"
-                                            for="privacy-lastseenSwitch"></label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="py-3 border-top">
-                            <div class="d-flex align-items-center">
-                                <div class="flex-grow-1 overflow-hidden">
-                                    <h5 class="font-size-13 mb-0 text-truncate">Status</h5>
-                                </div>
-                                <div class="dropdown ms-2 me-0">
-                                    <button class="btn btn-light btn-sm dropdown-toggle w-sm"
-                                        type="button" data-bs-toggle="dropdown" aria-haspopup="true"
-                                        aria-expanded="false">
-                                        Everyone <i class="mdi mdi-chevron-down"></i>
-                                    </button>
-                                    <div class="dropdown-menu dropdown-menu-end">
-                                        <a class="dropdown-item" href="#">Everyone</a>
-                                        <a class="dropdown-item" href="#">selected</a>
-                                        <a class="dropdown-item" href="#">Nobody</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="py-3 border-top">
-                            <div class="d-flex align-items-center">
-                                <div class="flex-grow-1 overflow-hidden">
-                                    <h5 class="font-size-13 mb-0 text-truncate">Read receipts</h5>
-                                </div>
-                                <div class="ms-2 me-0">
-                                    <div class="form-check form-switch">
-                                        <input type="checkbox" class="form-check-input"
-                                            id="privacy-readreceiptSwitch" checked>
-                                        <label class="form-check-label"
-                                            for="privacy-readreceiptSwitch"></label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="py-3 border-top">
-                            <div class="d-flex align-items-center">
-                                <div class="flex-grow-1 overflow-hidden">
-                                    <h5 class="font-size-13 mb-0 text-truncate">Groups</h5>
-
-                                </div>
-                                <div class="dropdown ms-2 me-0">
-                                    <button class="btn btn-light btn-sm dropdown-toggle w-sm"
-                                        type="button" data-bs-toggle="dropdown" aria-haspopup="true"
-                                        aria-expanded="false">
-                                        Everyone <i class="mdi mdi-chevron-down"></i>
-                                    </button>
-                                    <div class="dropdown-menu dropdown-menu-end">
-                                        <a class="dropdown-item" href="#">Everyone</a>
-                                        <a class="dropdown-item" href="#">selected</a>
-                                        <a class="dropdown-item" href="#">Nobody</a>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="role[]" id="flexRadioDefault2" checked>
+                                        <label class="form-check-label" for="flexRadioDefault2">
+                                            Agent
+                                        </label>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-            <!-- end privacy card -->
-
-            <div class="accordion-item card border mb-2">
-                <div class="accordion-header" id="security1">
-                    <button class="accordion-button collapsed" type="button"
-                        data-bs-toggle="collapse" data-bs-target="#security" aria-expanded="false"
-                        aria-controls="security">
-                        <h5 class="font-size-14 m-0"></i> Security</h5>
-                    </button>
-                </div>
-                <div id="security" class="accordion-collapse collapse" aria-labelledby="security1"
-                    data-bs-parent="#settingprofile">
-                    <div class="accordion-body">
-                        <div class="d-flex align-items-center">
-                            <div class="flex-grow-1 overflow-hidden">
-                                <h5 class="font-size-13 mb-0 text-truncate">Show security
-                                    notification</h5>
-
-                            </div>
-                            <div class="ms-2 me-0">
-                                <div class="form-check form-switch">
-                                    <input type="checkbox" class="form-check-input"
-                                        id="security-notificationswitch">
-                                    <label class="form-check-label"
-                                        for="security-notificationswitch"></label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- end security card -->
-
-            <div class="accordion-item card border mb-2">
-                <div class="accordion-header" id="help1">
-                    <button class="accordion-button collapsed" type="button"
-                        data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false"
-                        aria-controls="collapseFour">
-                        <h5 class="font-size-14 m-0"></i> Help</h5>
-                    </button>
-                </div>
-                <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="help1"
-                    data-bs-parent="#settingprofile">
-                    <div class="accordion-body">
-                        <div class="py-3">
-                            <h5 class="font-size-13 mb-0"><a href="#"
-                                    class="text-body d-block">FAQs</a></h5>
-                        </div>
-                        <div class="py-3 border-top">
-                            <h5 class="font-size-13 mb-0"><a href="#"
-                                    class="text-body d-block">Contact</a></h5>
-                        </div>
-                        <div class="py-3 border-top">
-                            <h5 class="font-size-13 mb-0"><a href="#"
-                                    class="text-body d-block">Terms & Privacy policy</a></h5>
-                        </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Send Invitation</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- end profile-setting-accordion -->
-    </div>
-    <!-- End User profile description -->
-</div>
+    </form>
 @endsection
+@push('css')
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css">
+    <link rel="stylesheet" href="{{ asset('assets/css/datatable-table.css') }}">
+@endpush
+@push('js')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.19/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $(".example").DataTable({
+                aaSorting: [],
+                responsive: true,
+
+                columnDefs: [{
+                        responsivePriority: 1,
+                        targets: 0
+                    },
+                    {
+                        responsivePriority: 2,
+                        targets: -1
+                    }
+                ]
+            });
+
+            $(".dataTables_filter input").attr("placeholder", "Search here...").css({
+                width: "300px",
+                display: "inline-block"
+            });
+
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
+@endpush

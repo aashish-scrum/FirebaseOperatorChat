@@ -28,6 +28,7 @@
             }
         }
     </style>
+    @stack('css')
 </head>
 
 <body>
@@ -48,6 +49,7 @@
     <script src="{{ asset('assets/libs/owl.carousel/owl.carousel.min.js') }}"></script>
     <script src="{{ asset('assets/js/pages/index.init.js') }}"></script>
     <script src="{{ asset('assets/js/app.js') }}"></script>
+    @stack('js')
 </body>
 
 </html>
