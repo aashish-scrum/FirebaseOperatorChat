@@ -242,19 +242,10 @@
                             ref="hasScrolledToBottom">
                             <ul class="list-unstyled mb-0">
                                 <template v-for="message in state.messages" :key="message.key">
-                                    <li :class="{ 'right': (message.sender == operator.operator_id) ? true : false }">
+                                    <li class="right" v-if="message.sender == operator.operator_id">
                                         <div class="conversation-list">
-                                            <div class="chat-avatar avatar-sm"
-                                                v-if="message.sender == state.currentVisitor.visitor_id">
-                                                <span
-                                                    class="avatar-title rounded-circle bg-soft-primary text-primary">V</span>
-                                            </div>
-                                            <div class="chat-avatar avatar-sm"
-                                                v-else-if="message.sender == operator.operator_id">
-                                                <span
-                                                    class="avatar-title rounded-circle bg-soft-primary text-primary">{{
-                                                        operator.name[0]
-                                                    }}</span>
+                                            <div class="chat-avatar avatar-sm">
+                                                <span class="avatar-title rounded-circle bg-soft-primary text-primary">V</span>
                                             </div>
 
                                             <div class="user-chat-content">
@@ -266,17 +257,43 @@
                                                         <p class="chat-time mb-0">
                                                             <i class="ri-time-line align-middle"></i>
                                                             <span class="align-middle">{{
-                                                                new
-                                                                                                                            Date(message.timestamp).toLocaleString(undefined, {
+                                                                new Date(message.timestamp).toLocaleString(undefined, {
                                                                     hour12: true, hour: 'numeric', minute: '2-digit'
                                                                 })
                                                             }}</span>
                                                         </p>
                                                     </div>
                                                 </div>
-                                                <div class="conversation-name text-muted font-size-11">{{
-                                                                                                (message.sender == operator.operator_id) ? operator.name :
-                                                state.currentVisitor.visitor_id }}</div>
+                                                <div class="conversation-name text-muted font-size-11">
+                                                    {{ operator.name }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li v-else-if="message.sender == state.currentVisitor.visitor_id">
+                                        <div class="conversation-list">
+                                            <div class="chat-avatar avatar-sm">
+                                                <span class="avatar-title rounded-circle bg-soft-primary text-primary">V</span>
+                                            </div>
+                                            <div class="user-chat-content">
+                                                <div class="ctext-wrap">
+                                                    <div class="ctext-wrap-content">
+                                                        <p class="mb-0">
+                                                            {{ message.message }}
+                                                        </p>
+                                                        <p class="chat-time mb-0">
+                                                            <i class="ri-time-line align-middle"></i>
+                                                            <span class="align-middle">{{
+                                                                new Date(message.timestamp).toLocaleString(undefined, {
+                                                                    hour12: true, hour: 'numeric', minute: '2-digit'
+                                                                })
+                                                            }}</span>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div class="conversation-name text-muted font-size-11">
+                                                    {{ state.currentVisitor.visitor_id }}
+                                                </div>
                                             </div>
                                         </div>
                                     </li>
@@ -354,13 +371,12 @@
 
                     <div class="text-center p-4 border-bottom">
                         <div class="mb-4">
-                            <img src="assets/images/users/avatar-4.jpg" class="rounded-circle avatar-lg img-thumbnail"
-                                alt="">
+                            <img src="http://192.168.2.116:8000/assets/images/users/avatar-4.jpg" class="rounded-circle avatar-lg img-thumbnail" alt="">
                         </div>
-
                         <h5 class="font-size-16 mb-1 text-truncate">Doris Brown</h5>
-                        <p class="text-muted text-truncate mb-1"><i
-                                class="ri-record-circle-fill font-size-10 text-success me-1 ms-0"></i> Active</p>
+                        <p class="text-muted text-truncate mb-1">
+                            <i class="ri-record-circle-fill font-size-10 text-success me-1 ms-0"></i> Active
+                        </p>
                     </div>
                     <!-- End profile user -->
 
@@ -623,8 +639,7 @@
                         <div class="modal-body">
                             <div class="text-center p-4">
                                 <div class="avatar-lg mx-auto mb-4">
-                                    <img src="assets/images/users/avatar-4.jpg" alt=""
-                                        class="img-thumbnail rounded-circle">
+                                    <img src="http://192.168.2.116:8000/assets/images/users/avatar-4.jpg" alt="" class="img-thumbnail rounded-circle">
                                 </div>
 
                                 <h5 class="text-truncate">Doris Brown</h5>
@@ -663,8 +678,7 @@
                         <div class="modal-body">
                             <div class="text-center p-4">
                                 <div class="avatar-lg mx-auto mb-4">
-                                    <img src="assets/images/users/avatar-4.jpg" alt=""
-                                        class="img-thumbnail rounded-circle">
+                                    <img src="http://192.168.2.116:8000/assets/images/users/avatar-4.jpg" alt="" class="img-thumbnail rounded-circle">
                                 </div>
 
                                 <h5 class="text-truncate">Doris Brown</h5>
@@ -705,12 +719,12 @@ import db from '../db';
 export default {
     props: ['user'],
     setup(props) {
-        const sendMessageSound = new Audio("./sounds/message-send-notification.mp3");
-        const newMessageSound = new Audio("./sounds/unread-message-notification.wav");
+        const sendMessageSound = new Audio(`http://192.168.2.116:8000/sounds/message-send-notification.mp3`);
+        const newMessageSound = new Audio(`http://192.168.2.116:8000/sounds/unread-message-notification.wav`);
 
         const inputUsername = ref("");
         const inputMessage = ref("");
-        let hasScrolledToBottom = ref("")
+        let hasScrolledToBottom = ref("");
         let operator = ref(props.user);
         let state = reactive({
             currentVisitor: '',
@@ -737,13 +751,13 @@ export default {
                 operator: operator.value.operator_id,
                 visitor: visitor.visitor_id,
             },
-                message = {
-                    sender: visitor.visitor_id,
-                    receiver: operator.value.operator_id,
-                    message: visitor.message,
-                    read: 1,
-                    timestamp: visitor.timestamp,
-                };
+            message = {
+                sender: visitor.visitor_id,
+                receiver: operator.value.operator_id,
+                message: visitor.message,
+                read: 1,
+                timestamp: visitor.timestamp,
+            };
             visitor.receiver = operator.value.operator_id;
             db.collection("chat_room").add(chatRoom)
                 .then((docRef) => {
@@ -818,7 +832,6 @@ export default {
                     });
                     state.messages = messages;
                 });
-            // document.querySelector('#chatBox').classList.remove('d-none');
         }
 
         const countUnread = () => {
@@ -848,8 +861,10 @@ export default {
                         docData.doc_id = doc.id;
                         if (docData.type == 'pending')
                             pendingVisits.push(docData);
-                        if (docData.type != 'pending')
+                        if (operator.value.operator_id == docData.operator_id && docData.type != 'pending')
                             activeVisits.push(docData);
+                        if(operator.value.operator_id != docData.operator_id && state.currentVisitor != '' && docData.visitor_id == state.currentVisitor.visitor_id)
+                            state.currentVisitor = '';
                     });
                     state.pendingVisits = pendingVisits;
                     state.activeVisits = activeVisits;
@@ -885,12 +900,11 @@ export default {
                         });
                     db.collection('chat_room').doc(element.chat_room_id).delete();
                     state.currentVisitor = '';
-                    document.querySelector('#chatBox').classList.add('d-none');
                 });
         }
 
         onMounted(() => {
-            // countUnread();
+            countUnread();
             fetchUsers();
         });
 

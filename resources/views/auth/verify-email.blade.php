@@ -4,9 +4,9 @@
             <div class="row justify-content-center">
                 <div class="col-md-8 col-lg-6 col-xl-5">
                     <div class="text-center mb-4">
-                        <a href="{{url('/')}}" class="auth-logo mb-3 d-block">
-                            <img src="assets/images/logo-dark.png" alt="" height="30" class="logo logo-dark">
-                            <img src="assets/images/logo-light.png" alt="" height="30" class="logo logo-light">
+                        <a href="{{ url('/') }}" class="auth-logo mb-3 d-block">
+                            <img src="{{asset('assets/images/logo-dark.png')}}" alt="" height="30" class="logo logo-dark">
+                            <img src="{{asset('assets/images/logo-light.png')}}" alt="" height="30" class="logo logo-light">
                         </a>
 
                         <h4>Password Confirm</h4>

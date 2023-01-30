@@ -39,4 +39,9 @@ class VisitorController extends Controller
         $op->assigned_visitors--;
         $op->save();
     }
+
+    public function clientData()
+    {
+        return request()->ip();
+    }
 }

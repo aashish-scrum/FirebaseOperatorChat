@@ -21,3 +21,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post('visitor/auth',[VisitorController::class,'visitor_register']);
 Route::get('visitor/logout/{operator}/{visitor}',[VisitorController::class,'visitor_logout']);
+Route::get('/client-data',[VisitorController::class,'clientData']);

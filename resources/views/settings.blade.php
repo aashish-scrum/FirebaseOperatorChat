@@ -72,7 +72,7 @@
                             <div class="d-flex justify-content-between">
                                 <h5>Departments</h5>
                                 <div>
-                                    <a href="{{route('department.add')}}" class="btn btn-primary btn-sm ms-auto" >Add Department</a>
+                                    <a href="{{route('department.add',$companyUuid)}}" class="btn btn-primary btn-sm ms-auto" >Add Department</a>
                                 </div>
                             </div>
                             <div class="container">
@@ -119,7 +119,7 @@
             </div>
         </div>
     </div>
-    <form action="{{route('invite-members')}}" method="post">
+    <form action="{{route('invite.members',$companyUuid)}}" method="post">
         <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
             aria-labelledby="staticBackdropLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-scrollable modal-lg">
@@ -145,13 +145,13 @@
                                 </div>
                                 <div class="col">
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="role[]" id="flexRadioDefault1">
+                                        <input class="form-check-input" type="radio" name="role[]" value="admin" id="flexRadioDefault1">
                                         <label class="form-check-label" for="flexRadioDefault1">
                                             Admin
                                         </label>
                                     </div>
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="role[]" id="flexRadioDefault2" checked>
+                                        <input class="form-check-input" type="radio" name="role[]" value="agent" id="flexRadioDefault2" checked>
                                         <label class="form-check-label" for="flexRadioDefault2">
                                             Agent
                                         </label>
