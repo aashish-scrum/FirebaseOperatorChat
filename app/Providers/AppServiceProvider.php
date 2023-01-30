@@ -26,7 +26,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         view()->composer('layouts.sidebar', function ($view) {
-            $userCompanies = Company::where('user_id',auth('web')->id())->get();
+            $userCompanies = auth('web')->user()->companies;
             $view->with('companiesNav',$userCompanies);
         });
     }

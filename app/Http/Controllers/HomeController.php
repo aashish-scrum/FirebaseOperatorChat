@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Company;
 use App\Models\User;
 use App\Models\Visitor;
 use Illuminate\Http\Request;
@@ -21,7 +22,11 @@ class HomeController extends Controller
 
     public function settings()
     {
-        return view('settings');
+        $companies = auth('web')->user()->adminCompanies()->where('uuid',$this->companyUuid)->select('user_id','id')->get()->pluck('id')->toArray();
+        $members = User::whereHas('companies',function($query)use($companies){
+            $query->whereIn('company_id',$companies);
+        })->get();
+        return view('settings',compact('members'));
     }
 
     public function operator_status($operator_id, $status)

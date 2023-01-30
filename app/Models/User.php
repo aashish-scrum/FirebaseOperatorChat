@@ -23,6 +23,7 @@ class User extends Authenticatable
         'email',
         'password',
         'status',
+        'role',
     ];
 
     /**
@@ -46,7 +47,12 @@ class User extends Authenticatable
 
     public function companies()
     {
-        return $this->hasMany(Company::class,'user_id');
+        return $this->belongsToMany(Company::class,'company_user','user_id','company_id');
+    }
+
+    public function adminCompanies()
+    {
+        return $this->hasMany(Company::class);
     }
 
 }

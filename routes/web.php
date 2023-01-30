@@ -38,3 +38,5 @@ Route::post('/visitor/chat-end', [HomeController::class, 'chat_end']);
 
 Route::get('/company/create', [CompanyController::class, 'create'])->middleware('auth')->name('company.create');
 Route::post('/company/save', [CompanyController::class, 'save'])->middleware('auth')->name('company.save');
+
+Route::get('/member-verify', [CompanyController::class,'verify'])->name('verify.email');

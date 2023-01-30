@@ -10,8 +10,7 @@
                         </a>
 
                         <h4>Sign up</h4>
-                        <p class="text-muted mb-4">Get your Chatvia account now.</p>
-                        
+                        <p class="text-muted mb-4">Get your {{config('app.name')}} account now.</p>
                     </div>
 
                     <div class="card">
@@ -31,6 +30,9 @@
                             @endif
                             <form method="POST" action="{{ route('register') }}">
                                 @csrf
+                                @if (request()->token)
+                                    <input type="hidden" name="token" value="{{request()->token}}">
+                                @endif
 
                                 <div class="mb-3">
                                     <label class="form-label">Name</label>
@@ -39,7 +41,6 @@
                                             <i class="ri-user-2-line"></i>
                                         </span>
                                         <input type="text" name="name" :value="old('name')" required autofocus class="form-control form-control-lg bg-soft-light border-light" placeholder="Enter Name" aria-label="Enter Name" aria-describedby="basic-addon6">
-                                        
                                     </div>
                                 </div>
 
@@ -49,7 +50,7 @@
                                         <span class="input-group-text text-muted" id="basic-addon5">
                                             <i class="ri-mail-line"></i>
                                         </span>
-                                        <input type="email" name="email" :value="old('email')" required class="form-control form-control-lg bg-soft-light border-light" placeholder="Enter Email" aria-label="Enter Email" aria-describedby="basic-addon5">
+                                        <input type="email" name="email" value="@if(old('email')){{old('email')}}@elseif(isset(request()->email)){{request()->email}}@endif" required class="form-control form-control-lg bg-soft-light border-light" placeholder="Enter Email" aria-label="Enter Email" aria-describedby="basic-addon5">
                                         
                                     </div>
                                 </div>

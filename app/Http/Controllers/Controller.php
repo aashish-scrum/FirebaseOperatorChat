@@ -13,11 +13,11 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    public $company;
+    public $companyUuid;
 
     public function __construct() 
     {
-        $this->company = request()->segment(2);
-        View::share('companyUuid',$this->company);
+        $this->companyUuid = request()->segment(2);
+        View::share('companyUuid',$this->companyUuid);
     }
 }

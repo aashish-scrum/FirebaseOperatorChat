@@ -33,7 +33,7 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
         
-        $company = Company::where('user_id',auth('web')->id())->inRandomOrder()->first();
+        $company = auth('web')->user()->companies()->inRandomOrder()->first();
         
         return redirect()->route('dashboard',$company->uuid);
     }

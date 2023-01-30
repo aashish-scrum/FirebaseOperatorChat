@@ -17,11 +17,11 @@ class CompanyMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        if(auth('web')->check() && Company::where('user_id',auth('web')->id())->count() == 0){
+        if(auth('web')->check() && auth('web')->user()->role == 'admin' && Company::where('user_id',auth('web')->id())->count() == 0){
             return redirect()->route('company.create');
         }
 
-        if(auth('web')->check() && (Company::where('uuid',request()->segment(2))->first() == '' || Company::where('uuid',request()->segment(2))->first()->user_id != auth('web')->id())){
+        if(auth('web')->check() && auth('web')->user()->companies()->where('uuid',request()->segment(2))->first() == ''){
             return abort(403);
         }
         
