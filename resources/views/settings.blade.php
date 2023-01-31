@@ -96,32 +96,26 @@
                                             style="width:100%">
                                             <thead>
                                                 <tr>
-                                                    <th>Avatar</th>
-                                                    <th>Name</th>
-                                                    <th>Email</th>
-                                                    <th>Role</th>
-                                                    <th>App Access</th>
+                                                    <th>Department</th>
+                                                    <th>Company</th>
+                                                    <th>Users Count</th>
+                                                    <th>Description</th>
+                                                    <th>Actions</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
+                                                @foreach ($departments as $department)
                                                 <tr>
+                                                    <td>{{$department->department_name}}</td>
+                                                    <td>{{$department->company->company_name}}</td>
+                                                    <td>{{$department->users_count}}</td>
+                                                    <td>{{$department->description}}</td>
                                                     <td>
-                                                        <a href="#">
-                                                            <div class="avatar-xs">
-                                                                <span
-                                                                    class="avatar-title rounded-circle bg-soft-primary text-primary">
-                                                                    V
-                                                                </span>
-                                                            </div>
-                                                        </a>
-                                                    </td>
-                                                    <td>Aashish</td>
-                                                    <td>Designer@gmail.com</td>
-                                                    <td>Designer</td>
-                                                    <td>
-                                                        <div class="badge badge-soft-success rounded-pill">Enabled</div>
+                                                        <a href="{{route('department.view',[$companyUuid,$department->id])}}" class="btn btn-sm btn-outline-primary rounded-0 me-1"><i class="ri-edit-line fs-5"></i></a>
+                                                        <a href="{{route('department.delete',[$companyUuid,$department->id])}}" onclick="return confirm('Do you want to delete this deparment ?')" class="btn btn-sm btn-outline-danger rounded-0"><i class="ri-delete-bin-line fs-5"></i></a>
                                                     </td>
                                                 </tr>
+                                                @endforeach
                                             </tbody>
                                         </table>
                                     </div>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Company;
+use App\Models\Department;
 use App\Models\User;
 use App\Models\Visitor;
 use Illuminate\Http\Request;
@@ -22,11 +23,14 @@ class HomeController extends Controller
 
     public function settings()
     {
-        $companies = auth('web')->user()->adminCompanies()->where('uuid',$this->companyUuid)->select('user_id','id')->get()->pluck('id')->toArray();
+        $companies = User::find(auth('web')->id())->adminCompanies()->where('uuid',$this->companyUuid)->select('user_id','id')->get()->pluck('id')->toArray();
         $members = User::whereHas('companies',function($query)use($companies){
             $query->whereIn('company_id',$companies);
         })->get();
-        return view('settings',compact('members'));
+        $departments = Department::whereHas('company',function($query){
+            $query->where('uuid',$this->companyUuid);
+        })->withCount('users')->get();
+        return view('settings',compact('members','departments'));
     }
 
     public function operator_status($operator_id, $status)

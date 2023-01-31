@@ -29,8 +29,12 @@ Route::middleware(['auth','company'])->group(function () {
     Route::get('/dashboard/{company_id?}', [HomeController::class, 'index'])->name('dashboard');
     Route::get('/chats/{company_id?}', [HomeController::class, 'chat'])->name('chat');
     Route::get('/settings/{company_id?}', [HomeController::class, 'settings'])->name('settings');
-    Route::get('/department/{company_id?}/create', [DepartmentController::class, 'create'])->name('department.add');
+    Route::get('/invite-members/{company_id?}/index', [DepartmentController::class, 'members_create'])->name('invite.members.index');
     Route::post('/invite-members/{company_id?}', [DepartmentController::class, 'invite_members'])->name('invite.members');
+    Route::get('/department/{company_id?}/add', [DepartmentController::class, 'index'])->name('department.add');
+    Route::post('/department/{company_id?}/create', [DepartmentController::class, 'create'])->name('department.create');
+    Route::get('/department/{company_id?}/view/{id}', [DepartmentController::class, 'edit'])->name('department.view');
+    Route::get('/department/{company_id?}/destroy/{id}', [DepartmentController::class, 'destroy'])->name('department.delete');
 });
 Route::get('/chat/visitors', [VisitorController::class, 'visitors'])->name('visitors');
 Route::get('/chat/operator/status/{operator_id}/{status}', [HomeController::class, 'operator_status'])->name('visitors');
