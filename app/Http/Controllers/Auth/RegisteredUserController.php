@@ -46,24 +46,22 @@ class RegisteredUserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ];
-        if($request->token){
+        if($request->has('token')){
+            $role = '';
             $pending = PendingInvite::where('email',$request->email)->where('token',$request->token)->first();
             if(empty($pending)){
                 return abort(404);
             }
             $insert['email'] = $pending->email;
-            $insert['role'] = $pending->role;
+            $role = $pending->role;
             $company = Company::where('uuid',$pending->company_id)->first();
             $pending->delete();
         }
         $user = User::create($insert);
-        if($request->token){
-            $user->companies()->attach($company->id);
-        }
         event(new Registered($user));
-
         Auth::login($user);
-        if($request->token){
+        if($request->has('token')){
+            $user->companies()->attach($company->id,['role'=>$role]);
             return redirect()->route('dashboard',$company->uuid);
         }
         return redirect(RouteServiceProvider::HOME);

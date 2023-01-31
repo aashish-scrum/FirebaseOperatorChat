@@ -2,9 +2,10 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\Company;
+use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CompanyMiddleware
 {
@@ -17,11 +18,16 @@ class CompanyMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        if(auth('web')->check() && auth('web')->user()->role == 'admin' && Company::where('user_id',auth('web')->id())->count() == 0){
-            return redirect()->route('company.create');
+        
+        if(auth('web')->check() && User::find(auth('web')->id())->companies->first() == ''){
+            if(User::find(auth('web')->id())->companies->first()->pivot->role == 'admin'){
+                return redirect()->route('company.create');
+            }else{
+                return abort(403);
+            }
         }
 
-        if(auth('web')->check() && auth('web')->user()->companies()->where('uuid',request()->segment(2))->first() == ''){
+        if(auth('web')->check() && User::find(auth('web')->id())->companies()->where('uuid',request()->segment(2))->first() == ''){
             return abort(403);
         }
         

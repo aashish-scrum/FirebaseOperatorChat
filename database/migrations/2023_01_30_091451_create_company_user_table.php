@@ -17,6 +17,8 @@ class CreateCompanyUserTable extends Migration
             $table->id();
             $table->foreignId('company_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->enum('role',['admin','agent'])->default('admin');
+            $table->boolean('status')->default(1);
             $table->timestamps();
         });
     }

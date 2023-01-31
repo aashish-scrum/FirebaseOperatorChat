@@ -39,9 +39,7 @@ class CompanyController extends Controller
         if(User::where('email',$pending->email)->count() > 0){
             $company = Company::where('uuid',$pending->company_id)->first();
             $user = User::where('email',$pending->email)->first();
-            $user->role = $pending->role;
-            $user->save();
-            $user->companies()->attach($company->id);
+            $user->companies()->attach($company->id,['role'=>$pending->role]);
             $pending->delete();
             event(new Registered($user));
             Auth::login($user);

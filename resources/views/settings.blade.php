@@ -68,7 +68,7 @@
                                                         </td>
                                                         <td>{{ $member->name }}</td>
                                                         <td>{{ $member->email }}</td>
-                                                        <td>{{ $member->role }}</td>
+                                                        <td>{{ $member->companies->first()->pivot->role }}</td>
                                                         <td>
                                                             <div class="badge {{($member->status == 1) ? 'badge-soft-success' : 'badge-soft-danger'}} rounded-pill">{{($member->status == 1) ? 'Enabled' : 'Disabled'}}</div>
                                                         </td>

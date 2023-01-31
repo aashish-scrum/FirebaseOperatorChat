@@ -24,12 +24,13 @@ class HomeController extends Controller
     public function settings()
     {
         $companies = User::find(auth('web')->id())->adminCompanies()->where('uuid',$this->companyUuid)->select('user_id','id')->get()->pluck('id')->toArray();
+        
         $members = User::whereHas('companies',function($query)use($companies){
             $query->whereIn('company_id',$companies);
-        })->get();
-        $departments = Department::whereHas('company',function($query){
-            $query->where('uuid',$this->companyUuid);
-        })->withCount('users')->get();
+        })->with('companies:user_id,uuid,id')->get();
+
+        $departments = Department::whereIn('company_id',$companies)->withCount('users')->get();
+
         return view('settings',compact('members','departments'));
     }
 
