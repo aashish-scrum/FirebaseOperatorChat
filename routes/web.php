@@ -41,6 +41,7 @@ Route::middleware(['auth','company'])->group(function () {
 Route::get('/chat/visitors', [VisitorController::class, 'visitors'])->name('visitors');
 Route::get('/chat/operator/status/{operator_id}/{status}', [HomeController::class, 'operator_status'])->name('visitors');
 Route::post('/visitor/chat-end', [HomeController::class, 'chat_end']);
+Route::post('/visitor/chat-transfer', [HomeController::class, 'chat_transfer']);
 
 Route::get('/company/create', [CompanyController::class, 'create'])->middleware('auth')->name('company.create');
 Route::post('/company/save', [CompanyController::class, 'save'])->middleware('auth')->name('company.save');

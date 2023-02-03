@@ -237,7 +237,7 @@
                                     </li>
 
                                     <li class="list-inline-item d-none d-lg-inline-block me-2 ms-0">
-                                        <button type="button" class="btn nav-btn user-profile-show" @click="showDetails()">
+                                        <button type="button" class="btn nav-btn user-profile-show" @click="state.isDetailOpen = (state.isDetailOpen == true) ? false : true; ">
                                             <i class="ri-user-2-line"></i>
                                         </button>
                                     </li>
@@ -378,272 +378,255 @@
                 <!-- end chat conversation section -->
 
                 <!-- start User profile detail sidebar -->
-                <div class="user-profile-sidebar">
+                <div class="user-profile-sidebar" :class="{'d-block' : (state.isDetailOpen === true) ? true : false,}">
                     <div class="px-3 px-lg-4 pt-3 pt-lg-4">
                         <div class="user-chat-nav text-end">
-                            <button type="button" class="btn nav-btn" id="user-profile-hide">
+                            <button type="button" @click="state.isDetailOpen = (state.isDetailOpen == true) ? false : true;" class="btn nav-btn" id="user-profile-hide">
                                 <i class="ri-close-line"></i>
                             </button>
                         </div>
                     </div>
-
-                    <div class="text-center p-4 border-bottom">
-                        <div class="mb-4">
-                            <img src="http://192.168.2.116:8000/assets/images/users/avatar-4.jpg" class="rounded-circle avatar-lg img-thumbnail" alt="">
-                        </div>
-                        <h5 class="font-size-16 mb-1 text-truncate">Doris Brown</h5>
-                        <p class="text-muted text-truncate mb-1">
-                            <i class="ri-record-circle-fill font-size-10 text-success me-1 ms-0"></i> Active
-                        </p>
-                    </div>
-                    <!-- End profile user -->
-
                     <!-- Start user-profile-desc -->
-                    <div class="p-4 user-profile-desc" id="profile-details" data-simplebar>
-                        <div class="text-muted">
-                            <p class="mb-4">If several languages coalesce, the grammar of the resulting language
-                                is more
-                                simple and regular than that of the individual.</p>
-                        </div>
-
-                        <div class="accordion" id="myprofile">
-
-                            <div class="accordion-item card border mb-2">
-                                <div class="accordion-header" id="about3">
-                                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                                        data-bs-target="#aboutprofile" aria-expanded="true"
-                                        aria-controls="aboutprofile">
-                                        <h5 class="font-size-14 m-0">
-                                            <i class="ri-user-2-line me-2 ms-0 align-middle d-inline-block"></i>
-                                            About
-                                        </h5>
-                                    </button>
-                                </div>
-                                <div id="aboutprofile" class="accordion-collapse collapse show" aria-labelledby="about3"
-                                    data-bs-parent="#myprofile">
-                                    <div class="accordion-body">
-                                        <div>
-                                            <p class="text-muted mb-1">Name</p>
-                                            <h5 class="font-size-14">Doris Brown</h5>
+                    <div class="p-4 user-profile-desc">
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Knowladge Base</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Transfer</button>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="myTabContent">
+                            <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+                                <div class="accordion mt-2" id="myprofile">
+                                    <div class="accordion-item card border mb-2">
+                                        <div class="accordion-header" id="about3">
+                                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#aboutprofile" aria-expanded="true" aria-controls="aboutprofile">
+                                                <h5 class="font-size-14 m-0">
+                                                    <i class="ri-user-2-line me-2 ms-0 align-middle d-inline-block"></i> About
+                                                </h5>
+                                            </button>
                                         </div>
-
-                                        <div class="mt-4">
-                                            <p class="text-muted mb-1">Email</p>
-                                            <h5 class="font-size-14">adc@123.com</h5>
-                                        </div>
-
-                                        <div class="mt-4">
-                                            <p class="text-muted mb-1">Time</p>
-                                            <h5 class="font-size-14">11:40 AM</h5>
-                                        </div>
-
-                                        <div class="mt-4">
-                                            <p class="text-muted mb-1">Location</p>
-                                            <h5 class="font-size-14 mb-0">California, USA</h5>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="accordion-item card border">
-                                <div class="accordion-header" id="attachfile3">
-                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                        data-bs-target="#attachprofile" aria-expanded="false"
-                                        aria-controls="attachprofile">
-                                        <h5 class="font-size-14 m-0">
-                                            <i class="ri-attachment-line me-2 ms-0 align-middle d-inline-block"></i>
-                                            Attached Files
-                                        </h5>
-                                    </button>
-                                </div>
-                                <div id="attachprofile" class="accordion-collapse collapse"
-                                    aria-labelledby="attachfile3" data-bs-parent="#myprofile">
-                                    <div class="accordion-body">
-                                        <div class="card p-2 border mb-2">
-                                            <div class="d-flex align-items-center">
-                                                <div class="avatar-sm me-3 ms-0">
-                                                    <div
-                                                        class="avatar-title bg-soft-primary text-primary rounded font-size-20">
-                                                        <i class="ri-file-text-fill"></i>
-                                                    </div>
-                                                </div>
-                                                <div class="flex-grow-1">
-                                                    <div class="text-start">
-                                                        <h5 class="font-size-14 mb-1">admin_v1.0.zip</h5>
-                                                        <p class="text-muted font-size-13 mb-0">12.5 MB</p>
-                                                    </div>
+                                        <div id="aboutprofile" class="accordion-collapse collapse show" aria-labelledby="about3" data-bs-parent="#myprofile" style="">
+                                            <div class="accordion-body">
+                                                <div>
+                                                    <p class="text-muted mb-1">Name</p>
+                                                    <h5 class="font-size-14">Doris Brown</h5>
                                                 </div>
 
-                                                <div class="ms-4 me-0">
-                                                    <ul class="list-inline mb-0 font-size-18">
-                                                        <li class="list-inline-item">
-                                                            <a href="javascript:void(0)" class="text-muted px-1">
-                                                                <i class="ri-download-2-line"></i>
-                                                            </a>
-                                                        </li>
-                                                        <li class="list-inline-item dropdown">
-                                                            <a class="dropdown-toggle text-muted px-1"
-                                                                href="javascript:void(0)" role="button"
-                                                                data-bs-toggle="dropdown" aria-haspopup="true"
-                                                                aria-expanded="false">
-                                                                <i class="ri-more-fill"></i>
-                                                            </a>
-                                                            <div class="dropdown-menu dropdown-menu-end">
-                                                                <a class="dropdown-item"
-                                                                    href="javascript:void(0)">Action</a>
-                                                                <a class="dropdown-item"
-                                                                    href="javascript:void(0)">Another
-                                                                    action</a>
-                                                                <div class="dropdown-divider"></div>
-                                                                <a class="dropdown-item"
-                                                                    href="javascript:void(0)">Delete</a>
-                                                            </div>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="card p-2 border mb-2">
-                                            <div class="d-flex align-items-center">
-                                                <div class="avatar-sm me-3 ms-0">
-                                                    <div
-                                                        class="avatar-title bg-soft-primary text-primary rounded font-size-20">
-                                                        <i class="ri-image-fill"></i>
-                                                    </div>
-                                                </div>
-                                                <div class="flex-grow-1">
-                                                    <div class="text-start">
-                                                        <h5 class="font-size-14 mb-1">Image-1.jpg</h5>
-                                                        <p class="text-muted font-size-13 mb-0">4.2 MB</p>
-                                                    </div>
+                                                <div class="mt-4">
+                                                    <p class="text-muted mb-1">Email</p>
+                                                    <h5 class="font-size-14">adc@123.com</h5>
                                                 </div>
 
-                                                <div class="ms-4 me-0">
-                                                    <ul class="list-inline mb-0 font-size-18">
-                                                        <li class="list-inline-item">
-                                                            <a href="javascript:void(0)" class="text-muted px-1">
-                                                                <i class="ri-download-2-line"></i>
-                                                            </a>
-                                                        </li>
-                                                        <li class="list-inline-item dropdown">
-                                                            <a class="dropdown-toggle text-muted px-1"
-                                                                href="javascript:void(0)" role="button"
-                                                                data-bs-toggle="dropdown" aria-haspopup="true"
-                                                                aria-expanded="false">
-                                                                <i class="ri-more-fill"></i>
-                                                            </a>
-                                                            <div class="dropdown-menu dropdown-menu-end">
-                                                                <a class="dropdown-item"
-                                                                    href="javascript:void(0)">Action</a>
-                                                                <a class="dropdown-item"
-                                                                    href="javascript:void(0)">Another
-                                                                    action</a>
-                                                                <div class="dropdown-divider"></div>
-                                                                <a class="dropdown-item"
-                                                                    href="javascript:void(0)">Delete</a>
-                                                            </div>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="card p-2 border mb-2">
-                                            <div class="d-flex align-items-center">
-                                                <div class="avatar-sm me-3 ms-0">
-                                                    <div
-                                                        class="avatar-title bg-soft-primary text-primary rounded font-size-20">
-                                                        <i class="ri-image-fill"></i>
-                                                    </div>
-                                                </div>
-                                                <div class="flex-grow-1">
-                                                    <div class="text-start">
-                                                        <h5 class="font-size-14 mb-1">Image-2.jpg</h5>
-                                                        <p class="text-muted font-size-13 mb-0">3.1 MB</p>
-                                                    </div>
+                                                <div class="mt-4">
+                                                    <p class="text-muted mb-1">Time</p>
+                                                    <h5 class="font-size-14">11:40 AM</h5>
                                                 </div>
 
-                                                <div class="ms-4 me-0">
-                                                    <ul class="list-inline mb-0 font-size-18">
-                                                        <li class="list-inline-item">
-                                                            <a href="javascript:void(0)" class="text-muted px-1">
-                                                                <i class="ri-download-2-line"></i>
-                                                            </a>
-                                                        </li>
-                                                        <li class="list-inline-item dropdown">
-                                                            <a class="dropdown-toggle text-muted px-1"
-                                                                href="javascript:void(0)" role="button"
-                                                                data-bs-toggle="dropdown" aria-haspopup="true"
-                                                                aria-expanded="false">
-                                                                <i class="ri-more-fill"></i>
-                                                            </a>
-                                                            <div class="dropdown-menu dropdown-menu-end">
-                                                                <a class="dropdown-item"
-                                                                    href="javascript:void(0)">Action</a>
-                                                                <a class="dropdown-item"
-                                                                    href="javascript:void(0)">Another
-                                                                    action</a>
-                                                                <div class="dropdown-divider"></div>
-                                                                <a class="dropdown-item"
-                                                                    href="javascript:void(0)">Delete</a>
-                                                            </div>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="card p-2 border mb-2">
-                                            <div class="d-flex align-items-center">
-                                                <div class="avatar-sm me-3 ms-0">
-                                                    <div
-                                                        class="avatar-title bg-soft-primary text-primary rounded font-size-20">
-                                                        <i class="ri-file-text-fill"></i>
-                                                    </div>
-                                                </div>
-                                                <div class="flex-grow-1">
-                                                    <div class="text-start">
-                                                        <h5 class="font-size-14 mb-1">Landing-A.zip</h5>
-                                                        <p class="text-muted font-size-13 mb-0">6.7 MB</p>
-                                                    </div>
-                                                </div>
-
-                                                <div class="ms-4 me-0">
-                                                    <ul class="list-inline mb-0 font-size-18">
-                                                        <li class="list-inline-item">
-                                                            <a href="javascript:void(0)" class="text-muted px-1">
-                                                                <i class="ri-download-2-line"></i>
-                                                            </a>
-                                                        </li>
-                                                        <li class="list-inline-item dropdown">
-                                                            <a class="dropdown-toggle text-muted px-1"
-                                                                href="javascript:void(0)" role="button"
-                                                                data-bs-toggle="dropdown" aria-haspopup="true"
-                                                                aria-expanded="false">
-                                                                <i class="ri-more-fill"></i>
-                                                            </a>
-                                                            <div class="dropdown-menu dropdown-menu-end">
-                                                                <a class="dropdown-item"
-                                                                    href="javascript:void(0)">Action</a>
-                                                                <a class="dropdown-item"
-                                                                    href="javascript:void(0)">Another
-                                                                    action</a>
-                                                                <div class="dropdown-divider"></div>
-                                                                <a class="dropdown-item"
-                                                                    href="javascript:void(0)">Delete</a>
-                                                            </div>
-                                                        </li>
-                                                    </ul>
+                                                <div class="mt-4">
+                                                    <p class="text-muted mb-1">Location</p>
+                                                    <h5 class="font-size-14 mb-0">California, USA</h5>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
+
+                                    <div class="accordion-item card border">
+                                        <div class="accordion-header" id="attachfile3">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#attachprofile" aria-expanded="false" aria-controls="attachprofile">
+                                                <h5 class="font-size-14 m-0">
+                                                    <i class="ri-attachment-line me-2 ms-0 align-middle d-inline-block"></i>
+                                                    Attached Files
+                                                </h5>
+                                            </button>
+                                        </div>
+                                        <div id="attachprofile" class="accordion-collapse collapse" aria-labelledby="attachfile3" data-bs-parent="#myprofile" style="">
+                                            <div class="accordion-body">
+                                                <div class="card p-2 border mb-2">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="avatar-sm me-3 ms-0">
+                                                            <div class="avatar-title bg-soft-primary text-primary rounded font-size-20">
+                                                                <i class="ri-file-text-fill"></i>
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex-grow-1">
+                                                            <div class="text-start">
+                                                                <h5 class="font-size-14 mb-1">admin_v1.0.zip</h5>
+                                                                <p class="text-muted font-size-13 mb-0">12.5 MB</p>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="ms-4 me-0">
+                                                            <ul class="list-inline mb-0 font-size-18">
+                                                                <li class="list-inline-item">
+                                                                    <a href="#" class="text-muted px-1">
+                                                                        <i class="ri-download-2-line"></i>
+                                                                    </a>
+                                                                </li>
+                                                                <li class="list-inline-item dropdown">
+                                                                    <a class="dropdown-toggle text-muted px-1" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                        <i class="ri-more-fill"></i>
+                                                                    </a>
+                                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                                        <a class="dropdown-item" href="#">Action</a>
+                                                                        <a class="dropdown-item" href="#">Another action</a>
+                                                                        <div class="dropdown-divider"></div>
+                                                                        <a class="dropdown-item" href="#">Delete</a>
+                                                                    </div>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="card p-2 border mb-2">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="avatar-sm me-3 ms-0">
+                                                            <div class="avatar-title bg-soft-primary text-primary rounded font-size-20">
+                                                                <i class="ri-image-fill"></i>
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex-grow-1">
+                                                            <div class="text-start">
+                                                                <h5 class="font-size-14 mb-1">Image-1.jpg</h5>
+                                                                <p class="text-muted font-size-13 mb-0">4.2 MB</p>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="ms-4 me-0">
+                                                            <ul class="list-inline mb-0 font-size-18">
+                                                                <li class="list-inline-item">
+                                                                    <a href="#" class="text-muted px-1">
+                                                                        <i class="ri-download-2-line"></i>
+                                                                    </a>
+                                                                </li>
+                                                                <li class="list-inline-item dropdown">
+                                                                    <a class="dropdown-toggle text-muted px-1" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                        <i class="ri-more-fill"></i>
+                                                                    </a>
+                                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                                        <a class="dropdown-item" href="#">Action</a>
+                                                                        <a class="dropdown-item" href="#">Another action</a>
+                                                                        <div class="dropdown-divider"></div>
+                                                                        <a class="dropdown-item" href="#">Delete</a>
+                                                                    </div>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="card p-2 border mb-2">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="avatar-sm me-3 ms-0">
+                                                            <div class="avatar-title bg-soft-primary text-primary rounded font-size-20">
+                                                                <i class="ri-image-fill"></i>
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex-grow-1">
+                                                            <div class="text-start">
+                                                                <h5 class="font-size-14 mb-1">Image-2.jpg</h5>
+                                                                <p class="text-muted font-size-13 mb-0">3.1 MB</p>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="ms-4 me-0">
+                                                            <ul class="list-inline mb-0 font-size-18">
+                                                                <li class="list-inline-item">
+                                                                    <a href="#" class="text-muted px-1">
+                                                                        <i class="ri-download-2-line"></i>
+                                                                    </a>
+                                                                </li>
+                                                                <li class="list-inline-item dropdown">
+                                                                    <a class="dropdown-toggle text-muted px-1" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                        <i class="ri-more-fill"></i>
+                                                                    </a>
+                                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                                        <a class="dropdown-item" href="#">Action</a>
+                                                                        <a class="dropdown-item" href="#">Another action</a>
+                                                                        <div class="dropdown-divider"></div>
+                                                                        <a class="dropdown-item" href="#">Delete</a>
+                                                                    </div>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="card p-2 border mb-2">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="avatar-sm me-3 ms-0">
+                                                            <div class="avatar-title bg-soft-primary text-primary rounded font-size-20">
+                                                                <i class="ri-file-text-fill"></i>
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex-grow-1">
+                                                            <div class="text-start">
+                                                                <h5 class="font-size-14 mb-1">Landing-A.zip</h5>
+                                                                <p class="text-muted font-size-13 mb-0">6.7 MB</p>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="ms-4 me-0">
+                                                            <ul class="list-inline mb-0 font-size-18">
+                                                                <li class="list-inline-item">
+                                                                    <a href="#" class="text-muted px-1">
+                                                                        <i class="ri-download-2-line"></i>
+                                                                    </a>
+                                                                </li>
+                                                                <li class="list-inline-item dropdown">
+                                                                    <a class="dropdown-toggle text-muted px-1" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                        <i class="ri-more-fill"></i>
+                                                                    </a>
+                                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                                        <a class="dropdown-item" href="#">Action</a>
+                                                                        <a class="dropdown-item" href="#">Another action</a>
+                                                                        <div class="dropdown-divider"></div>
+                                                                        <a class="dropdown-item" href="#">Delete</a>
+                                                                    </div>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- end profile-user-accordion -->
                                 </div>
                             </div>
-                            <!-- end profile-user-accordion -->
+                            <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+                                <div class="chat-message-list chat-group-list" data-simplebar>
+                                    <ul class="list-unstyled chat-list">
+                                        <template v-for="depart in operator.depart">
+                                            <li :class="{'active' : (state.transfer.id == depart.id) ? true : false}">
+                                                <a href="javascript:void(0)" @click="state.transfer = depart">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="chat-user-img me-3 ms-0">
+                                                            <div class="avatar-xs">
+                                                                <span
+                                                                    class="avatar-title rounded-circle bg-soft-primary text-primary">
+                                                                    {{ depart.department_name.toString()[0] }}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex-grow-1 overflow-hidden">
+                                                            <h5 class="text-truncate font-size-14 mb-0">#{{depart.department_name}}
+                                                                <span class="badge badge-soft-danger rounded-pill float-end">{{ depart.users_count }}</span>
+                                                            </h5>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            </li>
+                                        </template>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <button class="btn btn-primary w-100" @click="transferChat()">Transfer</button>
+                                </div>
+                            </div>
                         </div>
-                        <!-- end user-profile-desc -->
                     </div>
                     <!-- end User profile detail sidebar -->
                 </div>
@@ -734,14 +717,15 @@
 <script>
 import { reactive, inject, ref, onMounted, onUpdated } from 'vue';
 import db from '../db';
+import axios from 'axios';
 export default {
     props: ['user'],
     setup(props) {
         const thisProperty = props.user.account ?? 'WDuQoN8x6Iioj6TosQc5nbrS';
         const thisWidget = props.user.widget ?? 'WDuQoN8';
-
-        const sendMessageSound = new Audio(`http://192.168.2.116:8000/sounds/message-send-notification.mp3`);
-        const newMessageSound = new Audio(`http://192.168.2.116:8000/sounds/unread-message-notification.wav`);
+        const basePath = location.protocol+'//'+location.hostname+':'+ location.port;
+        const sendMessageSound = new Audio(`${basePath}/sounds/message-send-notification.mp3`);
+        const newMessageSound = new Audio(`${basePath}/sounds/unread-message-notification.wav`);
 
         const inputUsername = ref("");
         const inputMessage = ref("");
@@ -754,7 +738,9 @@ export default {
             activeVisits: [],
             closedVisits: [],
             endVisits: [],
-            messages: []
+            messages: [],
+            isDetailOpen : false,
+            transfer: '',
         });
 
         const Login = () => {
@@ -803,12 +789,12 @@ export default {
         }
 
         const SendMessage = () => {
-            const messagesRef = db.collection('chat_room').doc(state.currentVisitor.chat_room_id).collection('messages');
-
             if (inputMessage.value.trim().length == 0) {
                 inputMessage.value = "";
                 return;
             }
+
+            const messagesRef = db.collection('chat_room').doc(state.currentVisitor.chat_room_id).collection('messages');
 
             const message = {
                 sender: operator.value.operator_id,
@@ -916,7 +902,7 @@ export default {
                     let data = {
                         visitor_id: element.visitor_id,
                         operator_id: element.operator_id,
-                        messages: messages
+                        messages: JSON.stringify(messages)
                     }
                     axios.post('/visitor/chat-end', data);
                     let updateClosed = 'closedbyoperator';
@@ -934,9 +920,32 @@ export default {
                 });
         }
 
-        const showDetails = () => {
-            console.log('clicked');
-            window.document.querySelector('#profile-details').classList.add('d-block')
+        const transferChat = () => {
+            let chatAdd = {
+                message : 'Chat Transfer',
+                type : 'transfer',
+                sender : operator.value.operator_id,
+                receiver : state.currentVisitor.visitor_id,
+                timestamp : Date.now(),
+                read : 1
+            };
+            db.collection('chat_room').doc(state.currentVisitor.chat_room_id).collection('messages').add(chatAdd);
+            axios.post(`${basePath}/visitor/chat-transfer`, {
+                visitor_id: state.currentVisitor.visitor_id,
+                operator_id: operator.value.operator_id,
+                messages: JSON.stringify(state.messages),
+                depart : state.transfer.id,
+            })
+            .then(function (res) {
+                db.collection('visitors').doc(state.currentVisitor.visitor_id).update({ operator_id : res.data.data.operator_id}).then(()=>{
+                    db.collection('chat_room').doc(state.currentVisitor.chat_room_id).update({operator : res.data.data.operator_id}).then(()=>{
+                        state.currentVisitor = '';
+                    });
+                });
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
         }
 
         onMounted(() => {
@@ -962,7 +971,7 @@ export default {
             fetchMessages,
             Logout,
             scrollBottom,
-            showDetails,
+            transferChat,
             hasScrolledToBottom
         }
     }

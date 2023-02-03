@@ -18,7 +18,9 @@ class HomeController extends Controller
 
     public function chat()
     {
-        return view('chat');
+        $companies = User::find(auth('web')->id())->adminCompanies()->where('uuid',$this->companyUuid)->select('user_id','id')->get()->pluck('id')->toArray();
+        $departments = Department::whereIn('company_id',$companies)->withCount('users')->get();
+        return view('chat', compact('departments'));
     }
 
     public function settings()
@@ -51,12 +53,26 @@ class HomeController extends Controller
             $message->visitor_id = $request->visitor_id;
             $message->operator_id = $request->operator_id;
             $message->status = 1;
-            $message->messages = json_encode($request->messages);
+            $message->messages = $request->messages;
             $message->save();
 
             return response()->json(['status' => 'success']);
-        } catch (\Throwable $th) {
+        } catch (\Exception $e) {
             return response()->json(['status' => 'error']);
+        }
+    }
+
+    public function chat_transfer(Request $request)
+    {
+        try {
+            // $this->chat_end($request);
+            // $user = User::whereHas('departments',function($query)use($request){
+            //     $query->where('department_id',$request->depart);
+            // })->where('id','!=',auth('web')->id())->inRandomOrder()->first();
+            $user = user::find(3);
+            return response()->json(['status' => 'success','message'=>'Chat Transfer','data'=>$user]);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error','message'=>$e->getMessage()]);
         }
     }
 }
