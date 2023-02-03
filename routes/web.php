@@ -22,7 +22,11 @@ Route::get('/', function () {
 });
 
 require __DIR__ . '/auth.php';
-
+Route::get('/widget-load',function(){
+    $propertyKey = '63b7f7c3c2f1ac1e202c06a4';
+    $widgetId = '1gm39vli1';
+    return response()->view('widget-loader',compact('propertyKey','widgetId'))->header('Content-Type', 'application/javascript');
+});
 Route::middleware(['auth','company'])->group(function () {
     Route::get('/dashboard/{company_id?}', [HomeController::class, 'index'])->name('dashboard');
     Route::get('/chats/{company_id?}', [HomeController::class, 'chat'])->name('chat');

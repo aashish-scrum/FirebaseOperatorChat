@@ -28,12 +28,11 @@
         <!-- Start chat-message-list -->
         <div>
             <!-- <h5 class="mb-3 px-3 font-size-16">Recent</h5> -->
-
             <div class="chat-message-list px-2" data-simplebar>
                 <ul class="nav nav-tabs mt-2" id="myTab" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active position-relative" id="home-tab" data-bs-toggle="tab"
-                            data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane"
+                        <button class="nav-link active position-relative" id="active-tab" data-bs-toggle="tab"
+                            data-bs-target="#active-tab-pane" type="button" role="tab" aria-controls="active-tab-pane"
                             aria-selected="true">Active
                             <span v-if="state.activeVisits.length  > 0" class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-danger">
                                 {{state.activeVisits.length}}
@@ -42,8 +41,8 @@
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link position-relative" id="profile-tab" data-bs-toggle="tab"
-                            data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane"
+                        <button class="nav-link position-relative" id="pending-tab" data-bs-toggle="tab"
+                            data-bs-target="#pending-tab-pane" type="button" role="tab" aria-controls="pending-tab-pane"
                             aria-selected="false">Request
                             <span v-if="state.pendingVisits.length > 0" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                                 {{state.pendingVisits.length}}
@@ -51,9 +50,19 @@
                             </span>
                         </button>
                     </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link position-relative" id="closed-tab" data-bs-toggle="tab"
+                            data-bs-target="#closed-tab-pane" type="button" role="tab" aria-controls="closed-tab-pane"
+                            aria-selected="false">Closed
+                            <span v-if="state.closedVisits.length > 0" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                {{state.closedVisits.length}}
+                                <span class="visually-hidden">unread messages</span>
+                            </span>
+                        </button>
+                    </li>
                 </ul>
                 <div class="tab-content" id="myTabContent">
-                    <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab"
+                    <div class="tab-pane fade show active" id="active-tab-pane" role="tabpanel" aria-labelledby="active-tab"
                         tabindex="0">
                         <ul class="list-unstyled chat-list chat-user-list">
                             <template v-for="visitor in state.activeVisits">
@@ -90,7 +99,7 @@
                             </template>
                         </ul>
                     </div>
-                    <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab"
+                    <div class="tab-pane fade" id="pending-tab-pane" role="tabpanel" aria-labelledby="pending-tab"
                         tabindex="0">
                         <ul class="list-unstyled chat-list chat-user-list">
                             <template v-for="pending in state.pendingVisits">
@@ -119,6 +128,42 @@
                                                 <span
                                                     class="badge badge-soft-danger rounded-pill">{{(pending.unreadCounts.toString().length
                                                     < 2) ? "0" + pending.unreadCounts : pending.unreadCounts}}</span>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                            </template>
+                        </ul>
+                    </div>
+                    <div class="tab-pane fade" id="closed-tab-pane" role="tabpanel" aria-labelledby="closed-tab"
+                        tabindex="0">
+                        <ul class="list-unstyled chat-list chat-user-list">
+                            <template v-for="closed in state.closedVisits">
+                                <li class="unread "
+                                    :class="{ 'selected-user active': (closed.visitor_id == state.currentVisitor.visitor_id) ? true : false, }">
+                                    <a href="javascript:void(0)" @click="fetchMessages(closed)">
+                                        <div class="d-flex">
+                                            <div class="chat-user-img align-self-center me-3 ms-0 offline">
+                                                <div class="avatar-xs">
+                                                    <span
+                                                        class="avatar-title rounded-circle bg-soft-primary text-primary">
+                                                        V
+                                                    </span>
+                                                    <span class="user-status"></span>
+                                                </div>
+                                            </div>
+                                            <div class="flex-grow-1 overflow-hidden">
+                                                <h5 class="text-truncate font-size-15 mb-1">{{ closed.visitor_id }}
+                                                </h5>
+                                                <p class="chat-user-message text-truncate mb-0">Next meeting tomorrow
+                                                    10.00AM
+                                                </p>
+                                            </div>
+                                            <!-- <div class="font-size-11">12:01 PM</div> -->
+                                            <div class="unread-message end-0" v-if="closed.unreadCounts > 0">
+                                                <span
+                                                    class="badge badge-soft-danger rounded-pill">{{(closed.unreadCounts.toString().length
+                                                    < 2) ? "0" + closed.unreadCounts : closed.unreadCounts}}</span>
                                             </div>
                                         </div>
                                     </a>
@@ -719,6 +764,9 @@ import db from '../db';
 export default {
     props: ['user'],
     setup(props) {
+        const thisProperty = props.user.account ?? 'WDuQoN8x6Iioj6TosQc5nbrS';
+        const thisWidget = props.user.widget ?? 'WDuQoN8';
+
         const sendMessageSound = new Audio(`http://192.168.2.116:8000/sounds/message-send-notification.mp3`);
         const newMessageSound = new Audio(`http://192.168.2.116:8000/sounds/unread-message-notification.wav`);
 
@@ -726,10 +774,12 @@ export default {
         const inputMessage = ref("");
         let hasScrolledToBottom = ref("");
         let operator = ref(props.user);
+
         let state = reactive({
             currentVisitor: '',
             pendingVisits: [],
             activeVisits: [],
+            closedVisits: [],
             endVisits: [],
             messages: []
         });
@@ -750,6 +800,8 @@ export default {
             let chatRoom = {
                 operator: operator.value.operator_id,
                 visitor: visitor.visitor_id,
+                property_id : thisProperty,
+                widget_id : thisWidget,
             },
             message = {
                 sender: visitor.visitor_id,
@@ -767,6 +819,8 @@ export default {
                             operator_id: operator.value.operator_id,
                             chat_room_id: docRef.id,
                             type: 'active',
+                            property_id : thisProperty,
+                            widget_id : thisWidget,
                         };
                         db.collection("visitors").doc(visitor.visitor_id).set(dataChanging).then(() => {
                             fetchMessages(dataChanging);
@@ -852,24 +906,28 @@ export default {
 
         const fetchUsers = async () => {
             db.collection("visitors")
+                .where("property_id", "==", thisProperty)
+				.where("widget_id", "==", thisWidget)
                 .onSnapshot((querySnapshot) => {
                     let pendingVisits = [];
                     let activeVisits = [];
+                    let closedVisits = [];
                     let docData;
                     querySnapshot.forEach((doc) => {
                         docData = doc.data();
                         docData.doc_id = doc.id;
                         if (docData.type == 'pending')
                             pendingVisits.push(docData);
-                        if (operator.value.operator_id == docData.operator_id && docData.type != 'pending')
+                        if (operator.value.operator_id == docData.operator_id && docData.type == 'active')
                             activeVisits.push(docData);
+                        if (operator.value.operator_id == docData.operator_id && docData.type != 'active' && docData.type != 'pending')
+                            closedVisits.push(docData);
                         if(operator.value.operator_id != docData.operator_id && state.currentVisitor != '' && docData.visitor_id == state.currentVisitor.visitor_id)
                             state.currentVisitor = '';
                     });
                     state.pendingVisits = pendingVisits;
                     state.activeVisits = activeVisits;
-                    console.log(state.pendingVisits.length);
-                    console.log(state.activeVisits.length);
+                    state.closedVisits = closedVisits;
                 });
         }
 

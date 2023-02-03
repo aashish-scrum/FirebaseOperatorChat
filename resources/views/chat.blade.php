@@ -1,5 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
-    <chat :user="{{ Auth::user() }}" />
+@php
+    $authData = Auth::user();
+    $authData->account = $companyUuid;
+    $authData->widget = 'WDuQoN8';
+@endphp
+    <chat :user="{{ Auth::user() }}"/>
 @endsection

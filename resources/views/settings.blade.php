@@ -16,8 +16,7 @@
                 <div class="col-md-3">
                     <div class="card">
                         <div class="card-body">
-                            <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist"
-                                aria-orientation="vertical">
+                            <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
                                 <button class="nav-link text-start active" id="v-pills-home-tab" data-bs-toggle="pill"
                                     data-bs-target="#v-pills-home" type="button" role="tab"
                                     aria-controls="v-pills-home" aria-selected="true">Property Members</button>
@@ -42,8 +41,7 @@
                             <div class="container">
                                 <div class="row py-4">
                                     <div class="col-12">
-                                        <table id="" class="example table table-hover responsive nowrap"
-                                            style="width:100%">
+                                        <table id="" class="example table table-hover responsive nowrap" style="width:100%">
                                             <thead>
                                                 <tr>
                                                     <th>Avatar</th>
@@ -210,8 +208,6 @@
                 width: "300px",
                 display: "inline-block"
             });
-
-            $('[data-toggle="tooltip"]').tooltip();
         });
     </script>
 @endpush

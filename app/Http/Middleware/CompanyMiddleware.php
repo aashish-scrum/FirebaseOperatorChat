@@ -20,11 +20,7 @@ class CompanyMiddleware
     {
         
         if(auth('web')->check() && User::find(auth('web')->id())->companies->first() == ''){
-            if(User::find(auth('web')->id())->companies->first()->pivot->role == 'admin'){
-                return redirect()->route('company.create');
-            }else{
-                return abort(403);
-            }
+            return redirect()->route('company.create');
         }
 
         if(auth('web')->check() && User::find(auth('web')->id())->companies()->where('uuid',request()->segment(2))->first() == ''){
