@@ -237,7 +237,7 @@
                                     </li>
 
                                     <li class="list-inline-item d-none d-lg-inline-block me-2 ms-0">
-                                        <button type="button" class="btn nav-btn user-profile-show">
+                                        <button type="button" class="btn nav-btn user-profile-show" @click="showDetails()">
                                             <i class="ri-user-2-line"></i>
                                         </button>
                                     </li>
@@ -247,33 +247,6 @@
                                             @click="saveChat(state.currentVisitor)">
                                             <i class="ri-save-line"></i>
                                         </button>
-                                    </li>
-
-                                    <li class="list-inline-item">
-                                        <div class="dropdown">
-                                            <button class="btn nav-btn dropdown-toggle" type="button"
-                                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                <i class="ri-more-fill"></i>
-                                            </button>
-                                            <div class="dropdown-menu dropdown-menu-end">
-                                                <a class="dropdown-item d-block d-lg-none user-profile-show"
-                                                    href="javascript:void(0)">
-                                                    View profile <i class="ri-user-2-line float-end text-muted"></i>
-                                                </a>
-                                                <a class="dropdown-item d-block d-lg-none" href="javascript:void(0)"
-                                                    data-bs-toggle="modal" data-bs-target="#audiocallModal">
-                                                    Audio <i class="ri-phone-line float-end text-muted"></i>
-                                                </a>
-                                                <a class="dropdown-item d-block d-lg-none" href="javascript:void(0)"
-                                                    data-bs-toggle="modal" data-bs-target="#videocallModal">
-                                                    Video <i class="ri-vidicon-line float-end text-muted"></i>
-                                                </a>
-                                                <a class="dropdown-item" href="javascript:void(0)"
-                                                    @click="saveChat(state.currentVisitor)">
-                                                    Save <i class="ri-save-line float-end text-muted"></i>
-                                                </a>
-                                            </div>
-                                        </div>
                                     </li>
                                 </ul>
                             </div>
@@ -426,7 +399,7 @@
                     <!-- End profile user -->
 
                     <!-- Start user-profile-desc -->
-                    <div class="p-4 user-profile-desc" data-simplebar>
+                    <div class="p-4 user-profile-desc" id="profile-details" data-simplebar>
                         <div class="text-muted">
                             <p class="mb-4">If several languages coalesce, the grammar of the resulting language
                                 is more
@@ -961,6 +934,11 @@ export default {
                 });
         }
 
+        const showDetails = () => {
+            console.log('clicked');
+            window.document.querySelector('#profile-details').classList.add('d-block')
+        }
+
         onMounted(() => {
             countUnread();
             fetchUsers();
@@ -984,6 +962,7 @@ export default {
             fetchMessages,
             Logout,
             scrollBottom,
+            showDetails,
             hasScrolledToBottom
         }
     }
